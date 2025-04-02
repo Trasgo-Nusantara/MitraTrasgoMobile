@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Dimensions, StatusBar, ScrollView, Text, Image, TouchableOpacity, Alert, Platform, PermissionsAndroid, FlatList } from 'react-native';
 import { BORDER_RADIUS, COLORS, COMPONENT_STYLES } from '../../lib/constants';
 import Geolocation from '@react-native-community/geolocation';
@@ -9,62 +9,21 @@ import { getData, postData } from '../../api/service';
 import ModalInfo from '../../component/ModalInfo';
 import ModalWarning from '../../component/ModalWaring';
 import ModalNotifikasi from '../../component/ModalNotifikasi';
+import MapView, { Marker } from 'react-native-maps';
 
 
 const { width } = Dimensions.get('window');
 
-const menu = [
-  {
-    items: "TrasRide",
-    image: require("../../assets/trasride.png"),
-    image2: require("../../assets/shape1.png"),
-    navigate: 'TrasRide',
-    status: true
-  },
-  {
-    items: "TrasFood",
-    image: require("../../assets/trasfood.png"),
-    image2: require("../../assets/shape1.png"),
-    navigate: 'TrasFood',
-    status: true
-  },
-  {
-    items: "TrasRent",
-    image: require("../../assets/trasrent.png"),
-    image2: require("../../assets/shape1.png"),
-    navigate: 'TrasRent',
-    status: true
-  },
-  {
-    items: "TrasMove",
-    image: require("../../assets/trasmove.png"),
-    image2: require("../../assets/shape1.png"),
-    navigate: 'TrasMove',
-    status: true
-  },
-]
-
-const bannerNews = [
-  {
-    id: 0,
-    items: "TrasRide",
-    image: "https://abigold.co.id/wp-content/uploads/2025/03/1.png",
-  },
-  {
-    id: 1,
-    items: "TrasRide",
-    image: "https://abigold.co.id/wp-content/uploads/2025/03/2.png",
-  },
-]
-
 const HomeScreen = ({ navigation }) => {
+  const mapRef = useRef(null);
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
-  const [pickupLocation, setPickupLocation] = useState({
+  const [driverLocation, setDriverLocation] = useState({
     latitude: 0,
     longitude: 0,
   });
+
   const [user, setUser] = useState({
     balance: 0,
     email: "",
@@ -173,71 +132,63 @@ const HomeScreen = ({ navigation }) => {
     await postData('auth/updateFCMUser', form);
   }
 
+
   useEffect(() => {
     getFCM();
     getCurrentLocation();
     getProfileUser();
   }, []);
 
+  const handleUserLocationChange = (event) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setDriverLocation({ latitude: latitude, longitude: longitude });
+  };
+
 
   return (
-    <View style={[COMPONENT_STYLES.container, { padding: 0 }]}>
+    <View style={{ flex: 1 }}>
       <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
-      <ScrollView contentContainerStyle={[COMPONENT_STYLES.scrollView]}>
-        <Image source={require("../../assets/frame.png")} style={styles.imageBack} />
-        <View style={{ alignItems: 'center' }}>
-          <Image source={require("../../assets/logo3.png")} style={{ width: 100, height: 100 }} />
-        </View>
-        <Text style={[COMPONENT_STYLES.textLarge, { color: 'white' }]}>{t("menuHome.selamat")}</Text>
-        <Text style={[COMPONENT_STYLES.textLarge, { color: 'white' }]}>{user.fullName}</Text>
-        <View style={styles.balanceBar}>
-          <View>
-            <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>TrasPoint</Text>
-            <Text style={[COMPONENT_STYLES.textMedium, { fontWeight: 600 }]}>{user.point.toLocaleString('id')} PTS</Text>
+      <MapView
+        ref={mapRef}
+        // provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        region={{
+          latitude: driverLocation.latitude,
+          longitude: driverLocation.longitude,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121,
+        }}
+        onUserLocationChange={handleUserLocationChange}
+      showsUserLocation={true}
+      >
+        <Marker coordinate={driverLocation} anchor={{ x: 0.5, y: 0.5 }}>
+          <View style={[styles.markerContainer, { backgroundColor: 'white' }]}>
+            <Image source={require("../../assets/logo.png")} style={styles.markerImage} />
           </View>
-          <View style={{ alignItems: 'center' }}>
-            <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Level</Text>
-            <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Pemula</Text>
-          </View>
+        </Marker>
+        {/* <Marker coordinate={pickupLocation} pinColor='red' title='Origin' /> */}
+        {/* <Marker coordinate={destinationLocation} pinColor='green' title='Destination' /> */}
+        {/* <Polyline coordinates={coordinates} strokeColor="#37AFE1" strokeWidth={4} /> */}
+        {/* {driverLocation.latitude !== 0 && statusDriver === 0 && findDriver &&
+            <Polyline coordinates={[pickupLocation, driverLocation]} strokeColor="#37AFE1" strokeWidth={4} />
+          } */}
+        {/* {findDriver &&
+            <Marker coordinate={driverLocation} pinColor='blue' title='Driver' />
+          } */}
+      </MapView>
+      <View style={{ alignItems: 'center', position:'absolute',top:0,left:10,right:10 }}>
+        <Image source={require("../../assets/logo2.png")} style={{ width: 100, height: 100 }} />
+      </View>
+      <View style={styles.balanceBar}>
+        <View>
+          <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Deposit</Text>
+          <Text style={[COMPONENT_STYLES.textMedium, { fontWeight: 600 }]}>{user.balance.toLocaleString('id')}</Text>
         </View>
-        <View style={styles.menuContainer}>
-          {menu.map((item, index) => {
-            return (
-              <TouchableOpacity key={index} style={styles.menuItem}
-                onPress={() => {
-                  if (item.status === false) {
-                    Alert.alert("Info", "Feature ini segera hadir")
-                  } else if (user.fullName === "") {
-                    navigation.navigate('UpdateProfile')
-                  } else {
-                    navigation.navigate(item.navigate, {
-                      latitude: 0,
-                      longitude: 0
-                    }
-                    )
-                  }
-                }}>
-                <View style={styles.shape} />
-                <Image source={item.image} style={{ width: 50, height: 50 }} />
-                <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>{item.items}</Text>
-              </TouchableOpacity>
-            )
-          })}
-        </View>
-        <View style={COMPONENT_STYLES.spacer} />
-        <View style={COMPONENT_STYLES.spacer} />
-        <Text style={[COMPONENT_STYLES.textMedium]}>{t("menuHome.inform")}</Text>
-        <View style={COMPONENT_STYLES.spacer} />
-        <FlatList
-          data={bannerNews}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <Image source={{ uri: item.image }} style={styles.image} />
-          )}
-        />
-      </ScrollView>
+        <TouchableOpacity style={{ alignItems: 'center' }}>
+          <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>TopUp</Text>
+          <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Deposit</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -286,8 +237,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    padding: 20
-  }
+    padding: 20,
+    position: 'absolute',
+    bottom: 20,
+    left: 10,
+    right: 10
+  },
+  map: {
+    flex: 1
+  },
+  markerImage: {
+    width: 30,
+    height: 30,
+  },
+  markerContainer: {
+    backgroundColor: 'white',
+    borderRadius: 100,
+  },
 });
 
 export default HomeScreen;

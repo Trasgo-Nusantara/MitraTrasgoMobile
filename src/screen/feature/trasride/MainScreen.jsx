@@ -102,7 +102,6 @@ const TrasrideScreen = ({ navigation }) => {
             destinationLon: destinationLocation.longitude,
         };
         try {
-            console.log(coordinates)
             const responseFinal = await postData('maps/getDirections', formData2);
             const formData = {
                 "createdAt": new Date().toISOString(),

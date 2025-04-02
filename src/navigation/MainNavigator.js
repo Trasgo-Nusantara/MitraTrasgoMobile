@@ -43,12 +43,24 @@ const HomeStack = () => {
   }, []);
 
   return (
-      <><ModalNotifikasi
-      isVisible={modalInfo}
-      setModalVisible={setmodalInfo}
-      title={titleInfo}
-      desc={bodyInfo} /><Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={MainNavigator} options={{ title: 'Home', headerShown: false }} />
+      <><Stack.Navigator initialRouteName="Home">
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={({ navigation }) => ({
+            title: 'Home',
+            headerShown: false,
+            headerStyle: {
+              elevation: 0, // Remove elevation on Android
+              shadowOpacity: 0, // Remove shadow on iOS
+            },
+            headerShadowVisible: false,
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Ionicons name="chevron-back-outline" size={32} color="black" style={{ marginRight: 20 }} />
+              </TouchableOpacity>
+            ),
+          })} />
         <Stack.Screen
           name="TrasRide"
           component={TrasrideScreen}
@@ -202,7 +214,13 @@ const HomeStack = () => {
               </View>
             ),
           })} />
-      </Stack.Navigator></>
+      </Stack.Navigator>
+      <ModalNotifikasi
+      isVisible={true}
+      setModalVisible={setmodalInfo}
+      title={"Pesanan Masuk"}
+      payment={"Metoda Pembayaran Tunai"}
+      desc={"Penawaran Rp 30.000 dengan jarak 3km"} /></>
   )
 };
 
