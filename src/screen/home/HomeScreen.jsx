@@ -253,7 +253,8 @@ const HomeScreen = ({ navigation }) => {
 
   const detailOrder = async () => {
     try {
-      var response = await getData('order/driverlistOrder/' + idOrder);
+      var response = await getData('order/driverlistOrder');
+      console.log(response.data)
       setorderList(response)
     } catch (error) {
       console.error(error);
