@@ -211,7 +211,7 @@ const HomeScreen = ({ navigation }) => {
         settitleInfo(remoteMessage.notification.title)
         setbodyInfo(remoteMessage.notification.body)
       }
-    });
+    },[]);
 
     // 3️⃣ Notifikasi diklik dari state terminated
     messaging()
@@ -238,12 +238,22 @@ const HomeScreen = ({ navigation }) => {
       });
   }, []);
 
+  const detailOrder = async () => {
+    try {
+      var response = await getData('order/driverlistOrder');
+      setorderList(response)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
   const ambilOrder = async () => {
     if (idOrder == "") {
       console.log("cancel")
     } else {
       try {
         await getData('order/terimaOrder/' + idOrder);
+        detailOrder() 
         setmodalInfo(false)
       } catch (error) {
         console.error(error);
@@ -251,19 +261,10 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const detailOrder = async () => {
-    try {
-      var response = await getData('order/driverlistOrder');
-      console.log(response.data)
-      setorderList(response)
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   useEffect(() => {
-    detailOrder()
-  });
+    detailOrder() 
+  },[]);
 
   return (
     <View style={{ flex: 1 }}>
