@@ -216,11 +216,11 @@ const HomeStack = () => {
           })} />
       </Stack.Navigator>
       <ModalNotifikasi
-      isVisible={true}
+      isVisible={modalInfo}
       setModalVisible={setmodalInfo}
-      title={"Pesanan Masuk"}
+      title={titleInfo}
       payment={"Metoda Pembayaran Tunai"}
-      desc={"Penawaran Rp 30.000 dengan jarak 3km"} /></>
+      desc={bodyInfo} /></>
   )
 };
 

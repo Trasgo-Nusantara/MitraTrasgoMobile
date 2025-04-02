@@ -25,8 +25,6 @@ const AppNavigator = () => {
     }
   }
 
-  
-
   useEffect(() => {
     setload(true)
     setInterval(onAuthStateChanged, 500);

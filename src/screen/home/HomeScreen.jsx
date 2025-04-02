@@ -19,6 +19,8 @@ const HomeScreen = ({ navigation }) => {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
+  const [fcm, setfcm] = useState("");
+
   const [driverLocation, setDriverLocation] = useState({
     latitude: 0,
     longitude: 0,
@@ -125,10 +127,10 @@ const HomeScreen = ({ navigation }) => {
 
   const getFCM = async () => {
     const fcmToken = await messaging().getToken();
-    console.log(fcmToken)
     const form = {
       fcm: fcmToken,
     };
+    setfcm(fcmToken)
     await postData('auth/updateFCMUser', form);
   }
 
@@ -139,9 +141,28 @@ const HomeScreen = ({ navigation }) => {
     getProfileUser();
   }, []);
 
-  const handleUserLocationChange = (event) => {
+  const handleUserLocationChange = async (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setDriverLocation({ latitude: latitude, longitude: longitude });
+    const formData = {
+      latitude: latitude,
+      longitude: longitude,
+      "service": {
+        "trasRideCar": true,
+        "trasRideCarXL": true,
+        "trasRide": true,
+        "trasRideXL": true,
+        "trasRideTaxi": true,
+        "trasMove": true,
+        "trasFood": true
+      },
+      "isActive": true,
+      "isStandby": true,
+      "onCall": true,
+      "fcm": fcm,
+      "lastActive": new Date().toISOString()
+    }
+    await postData('auth/updateLocationDriver', formData);
   };
 
 
@@ -159,7 +180,7 @@ const HomeScreen = ({ navigation }) => {
           longitudeDelta: 0.0121,
         }}
         onUserLocationChange={handleUserLocationChange}
-      showsUserLocation={true}
+        showsUserLocation={true}
       >
         <Marker coordinate={driverLocation} anchor={{ x: 0.5, y: 0.5 }}>
           <View style={[styles.markerContainer, { backgroundColor: 'white' }]}>
@@ -176,7 +197,7 @@ const HomeScreen = ({ navigation }) => {
             <Marker coordinate={driverLocation} pinColor='blue' title='Driver' />
           } */}
       </MapView>
-      <View style={{ alignItems: 'center', position:'absolute',top:0,left:10,right:10 }}>
+      <View style={{ alignItems: 'center', position: 'absolute', top: 0, left: 10, right: 10 }}>
         <Image source={require("../../assets/logo2.png")} style={{ width: 100, height: 100 }} />
       </View>
       <View style={styles.balanceBar}>
