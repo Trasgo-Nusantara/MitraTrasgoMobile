@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "187228522606",
+    "project_id": "trasgo-bdab2",
+    "storage_bucket": "trasgo-bdab2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187228522606:android:470593647ac27962497e7f",
+        "android_client_info": {
+          "package_name": "com.mitratrasgonusantara"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUKDzEbHSUxeI_d0Y8pAkEi8SydSz-TvQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187228522606:android:4b99e5adf0a70fc8497e7f",
+        "android_client_info": {
+          "package_name": "com.trasgonusantara"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUKDzEbHSUxeI_d0Y8pAkEi8SydSz-TvQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
