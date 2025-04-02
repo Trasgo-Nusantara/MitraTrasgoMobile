@@ -168,17 +168,26 @@ const HomeScreen = ({ navigation }) => {
   const [modalInfo, setmodalInfo] = useState(false);
   const [titleInfo, settitleInfo] = useState(false);
   const [bodyInfo, setbodyInfo] = useState(false);
+  const [isorder, setisorder] = useState(false);
   const [idOrder, setidOrder] = useState("");
-
-
+  const [orderList, setorderList] = useState("");
 
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      setidOrder(remoteMessage.data.idOrder)
-      setmodalInfo(true)
-      settitleInfo(remoteMessage.notification.title)
-      setbodyInfo(remoteMessage.notification.body)
+      if (remoteMessage.data.idOrder !== undefined) {
+        setidOrder(remoteMessage.data.idOrder)
+        setmodalInfo(true)
+        setisorder(true)
+        settitleInfo(remoteMessage.notification.title)
+        setbodyInfo(remoteMessage.notification.body)
+      } else {
+        setidOrder("")
+        setisorder(false)
+        setmodalInfo(true)
+        settitleInfo(remoteMessage.notification.title)
+        setbodyInfo(remoteMessage.notification.body)
+      }
     });
     return unsubscribe;
   }, []);
@@ -186,13 +195,21 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     // 2️⃣ Notifikasi masuk saat aplikasi di background (tidak terbuka di layar)
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      setidOrder(remoteMessage.data.idOrder)
-      setmodalInfo(true)
-      settitleInfo(remoteMessage.notification.title)
-      setbodyInfo(remoteMessage.notification.body)
-
-      if (remoteMessage.data?.forceOpen === 'true') {
-        Linking.openURL('myapp://home');
+      if (remoteMessage.data.idOrder !== undefined) {
+        setidOrder(remoteMessage.data.idOrder)
+        setmodalInfo(true)
+        settitleInfo(remoteMessage.notification.title)
+        setisorder(true)
+        setbodyInfo(remoteMessage.notification.body)
+        if (remoteMessage.data?.forceOpen === 'true') {
+          Linking.openURL('myapp://home');
+        }
+      } else {
+        setidOrder("")
+        setisorder(false)
+        setmodalInfo(true)
+        settitleInfo(remoteMessage.notification.title)
+        setbodyInfo(remoteMessage.notification.body)
       }
     });
 
@@ -201,16 +218,51 @@ const HomeScreen = ({ navigation }) => {
       .getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
-          setidOrder(remoteMessage.data.idOrder)
-          setmodalInfo(true)
-          settitleInfo(remoteMessage.notification.title)
-          setbodyInfo(remoteMessage.notification.body)
-          if (remoteMessage.data?.forceOpen === 'true') {
-            Linking.openURL('myapp://home');
+          if (remoteMessage.data.idOrder !== undefined) {
+            setidOrder(remoteMessage.data.idOrder)
+            setmodalInfo(true)
+            settitleInfo(remoteMessage.notification.title)
+            setisorder(true)
+            setbodyInfo(remoteMessage.notification.body)
+            if (remoteMessage.data?.forceOpen === 'true') {
+              Linking.openURL('myapp://home');
+            }
+          } else {
+            setidOrder("")
+            setisorder(false)
+            setmodalInfo(true)
+            settitleInfo(remoteMessage.notification.title)
+            setbodyInfo(remoteMessage.notification.body)
           }
         }
       });
   }, []);
+
+  const ambilOrder = async () => {
+    if (idOrder == "") {
+      console.log("cancel")
+    } else {
+      try {
+        await getData('order/terimaOrder/' + idOrder);
+        setmodalInfo(false)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const detailOrder = async () => {
+    try {
+      var response = await getData('order/driverlistOrder/' + idOrder);
+      setorderList(response)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    detailOrder()
+  });
 
   return (
     <View style={{ flex: 1 }}>
@@ -261,7 +313,8 @@ const HomeScreen = ({ navigation }) => {
         setModalVisible={setmodalInfo}
         title={titleInfo}
         payment={"Metoda Pembayaran Tunai"}
-        actions={()=> console.log(idOrder)}
+        actions={() => ambilOrder()}
+        isOrder={isorder}
         desc={bodyInfo} />
     </View>
   );

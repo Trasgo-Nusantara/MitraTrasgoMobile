@@ -15,18 +15,36 @@ const sound = new Sound('ordermasuk.mp3', Sound.MAIN_BUNDLE, (error) => {
   }
 });
 
-const ModalNotifikasi = ({ title, desc, isVisible, setModalVisible, actions, payment }) => {
+const sound2 = new Sound('notifin.mp3', Sound.MAIN_BUNDLE, (error) => {
+  if (error) {
+    console.log('Error loading sound:', error);
+  }
+});
+
+const ModalNotifikasi = ({ title, desc, isVisible, setModalVisible, actions, payment, isOrder }) => {
   const { t } = useTranslation();
-  const [animateModal, setAnimateModal] = useState(false);
+  const [animateModal, setAnimateModal] = useState(isVisible);
+
+  const terimaOrder =()=>{
+    actions()
+    cancelButton();
+  }
 
   useEffect(() => {
     let openTimer, closeTimer;
 
     if (isVisible) {
       // Play sound saat modal muncul
-      sound.play((success) => {
-        if (!success) console.log('Sound playback failed');
-      });
+      if(isOrder)
+      {
+        sound.play((success) => {
+          if (!success) console.log('Sound playback failed');
+        });
+      }else{
+        sound2.play((success) => {
+          if (!success) console.log('Sound playback failed');
+        });
+      }
 
       // Animasi masuk setelah 100ms
       openTimer = setTimeout(() => {
@@ -75,7 +93,7 @@ const ModalNotifikasi = ({ title, desc, isVisible, setModalVisible, actions, pay
           </View> */}
           <View style={COMPONENT_STYLES.spacer} />
           <View style={{ flex: 1 }}>
-            <ButtonComponent title="Terima" onPress={actions} />
+            <ButtonComponent title="Terima" onPress={()=> terimaOrder()} />
           </View>
         </View>
       </View>
