@@ -165,6 +165,52 @@ const HomeScreen = ({ navigation }) => {
     await postData('auth/updateLocationDriver', formData);
   };
 
+  const [modalInfo, setmodalInfo] = useState(false);
+  const [titleInfo, settitleInfo] = useState(false);
+  const [bodyInfo, setbodyInfo] = useState(false);
+  const [idOrder, setidOrder] = useState("");
+
+
+
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      setidOrder(remoteMessage.data.idOrder)
+      setmodalInfo(true)
+      settitleInfo(remoteMessage.notification.title)
+      setbodyInfo(remoteMessage.notification.body)
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    // 2️⃣ Notifikasi masuk saat aplikasi di background (tidak terbuka di layar)
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      setidOrder(remoteMessage.data.idOrder)
+      setmodalInfo(true)
+      settitleInfo(remoteMessage.notification.title)
+      setbodyInfo(remoteMessage.notification.body)
+
+      if (remoteMessage.data?.forceOpen === 'true') {
+        Linking.openURL('myapp://home');
+      }
+    });
+
+    // 3️⃣ Notifikasi diklik dari state terminated
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          setidOrder(remoteMessage.data.idOrder)
+          setmodalInfo(true)
+          settitleInfo(remoteMessage.notification.title)
+          setbodyInfo(remoteMessage.notification.body)
+          if (remoteMessage.data?.forceOpen === 'true') {
+            Linking.openURL('myapp://home');
+          }
+        }
+      });
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -210,6 +256,13 @@ const HomeScreen = ({ navigation }) => {
           <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Deposit</Text>
         </TouchableOpacity>
       </View>
+      <ModalNotifikasi
+        isVisible={modalInfo}
+        setModalVisible={setmodalInfo}
+        title={titleInfo}
+        payment={"Metoda Pembayaran Tunai"}
+        actions={()=> console.log(idOrder)}
+        desc={bodyInfo} />
     </View>
   );
 };

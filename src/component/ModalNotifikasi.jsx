@@ -65,14 +65,14 @@ const ModalNotifikasi = ({ title, desc, isVisible, setModalVisible, actions, pay
         <View style={COMPONENT_STYLES.spacer} />
         <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: '600' }]}>{desc}</Text>
         <View style={COMPONENT_STYLES.spacer} />
-        <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: '600' }]}>{payment}</Text>
+        {/* <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: '600' }]}>{payment}</Text> */}
         <View style={COMPONENT_STYLES.spacer} />
 
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-          <View style={{ flex: 1 }}>
+          {/* <View style={{ flex: 1 }}>
             <ButtonSecondaryComponent title={t('button.batal')} onPress={cancelButton} />
-          </View>
+          </View> */}
           <View style={COMPONENT_STYLES.spacer} />
           <View style={{ flex: 1 }}>
             <ButtonComponent title="Terima" onPress={actions} />

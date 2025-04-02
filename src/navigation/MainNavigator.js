@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screen/home/HomeScreen';
 import TrasrideScreen from '../screen/feature/trasride/MainScreen';
@@ -26,21 +26,6 @@ const Stack = createNativeStackNavigator();
 
 const HomeStack = () => {
   const { t } = useTranslation();
-  const [modalInfo, setmodalInfo] = useState(false);
-    const [titleInfo, settitleInfo] = useState(false);
-    const [bodyInfo, setbodyInfo] = useState(false);
-
-  
-
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      setmodalInfo(true)
-      settitleInfo(remoteMessage.notification.title)
-      setbodyInfo(remoteMessage.notification.body)
-      // Alert.alert('Pesan Baru!', JSON.stringify(remoteMessage.notification));
-    });
-    return unsubscribe;
-  }, []);
 
   return (
       <><Stack.Navigator initialRouteName="Home">
@@ -215,12 +200,7 @@ const HomeStack = () => {
             ),
           })} />
       </Stack.Navigator>
-      <ModalNotifikasi
-      isVisible={modalInfo}
-      setModalVisible={setmodalInfo}
-      title={titleInfo}
-      payment={"Metoda Pembayaran Tunai"}
-      desc={bodyInfo} /></>
+      </>
   )
 };
 
