@@ -8,7 +8,7 @@ const API_URL = 'https://backendtrasgo-609517395039.asia-southeast1.run.app/api/
 // Membuat instance Axios
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 10000, // Timeout 10 detik
+  timeout: 100000, // Timeout 10 detik
   headers: {
     'Content-Type': 'application/json',
   },

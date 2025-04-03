@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Dimensions, StatusBar, ScrollView, Text, Image, TouchableOpacity, Alert, Platform, PermissionsAndroid, FlatList } from 'react-native';
+import { View, StyleSheet, Dimensions, StatusBar, ScrollView, Text, Image, TouchableOpacity, Alert, Platform, PermissionsAndroid, FlatList, Linking } from 'react-native';
 import { BORDER_RADIUS, COLORS, COMPONENT_STYLES } from '../../lib/constants';
 import Geolocation from '@react-native-community/geolocation';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,9 @@ import { getData, postData } from '../../api/service';
 import ModalInfo from '../../component/ModalInfo';
 import ModalWarning from '../../component/ModalWaring';
 import ModalNotifikasi from '../../component/ModalNotifikasi';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
+import { ModalSearchView } from '../feature/trasride/component/SearchComponent';
+import ModalUser from '../../component/ModaUser';
 
 
 const { width } = Dimensions.get('window');
@@ -20,6 +22,19 @@ const HomeScreen = ({ navigation }) => {
 
   const [loading, setLoading] = useState(false);
   const [fcm, setfcm] = useState("");
+  const [pickupLocation, setpickupLocation] = useState(
+    {
+      latitude: 0,
+      longitude: 0
+    }
+  )
+  const [destinationLocation, setdestinationLocation] = useState(
+    {
+      latitude: 0,
+      longitude: 0
+    }
+  )
+  const [coordinate, setcoordinate] = useState([])
 
   const [driverLocation, setDriverLocation] = useState({
     latitude: 0,
@@ -181,12 +196,14 @@ const HomeScreen = ({ navigation }) => {
         setisorder(true)
         settitleInfo(remoteMessage.notification.title)
         setbodyInfo(remoteMessage.notification.body)
+       getProfileUser();
       } else {
         setidOrder("")
         setisorder(false)
         setmodalInfo(true)
         settitleInfo(remoteMessage.notification.title)
         setbodyInfo(remoteMessage.notification.body)
+       getProfileUser();
       }
     });
     return unsubscribe;
@@ -204,14 +221,16 @@ const HomeScreen = ({ navigation }) => {
         if (remoteMessage.data?.forceOpen === 'true') {
           Linking.openURL('myapp://home');
         }
+       getProfileUser();
       } else {
         setidOrder("")
         setisorder(false)
         setmodalInfo(true)
         settitleInfo(remoteMessage.notification.title)
         setbodyInfo(remoteMessage.notification.body)
+       getProfileUser();
       }
-    },[]);
+    }, []);
 
     // 3️⃣ Notifikasi diklik dari state terminated
     messaging()
@@ -227,12 +246,14 @@ const HomeScreen = ({ navigation }) => {
             if (remoteMessage.data?.forceOpen === 'true') {
               Linking.openURL('myapp://home');
             }
+           getProfileUser();
           } else {
             setidOrder("")
             setisorder(false)
             setmodalInfo(true)
             settitleInfo(remoteMessage.notification.title)
             setbodyInfo(remoteMessage.notification.body)
+           getProfileUser();
           }
         }
       });
@@ -241,19 +262,22 @@ const HomeScreen = ({ navigation }) => {
   const detailOrder = async () => {
     try {
       var response = await getData('order/driverlistOrder');
+      setpickupLocation(response?.data?.pickupLocation)
+      setdestinationLocation(response?.data?.destinationLocation)
+      setcoordinate(response?.data?.coordinates)
       setorderList(response)
     } catch (error) {
       console.error(error);
     }
   };
-  
+
   const ambilOrder = async () => {
     if (idOrder == "") {
       console.log("cancel")
     } else {
       try {
         await getData('order/terimaOrder/' + idOrder);
-        detailOrder() 
+        detailOrder()
         setmodalInfo(false)
       } catch (error) {
         console.error(error);
@@ -263,8 +287,31 @@ const HomeScreen = ({ navigation }) => {
 
 
   useEffect(() => {
-    detailOrder() 
-  },[]);
+    detailOrder();
+    const intervalId = setInterval(() => {
+      detailOrder();
+    }, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const actionsButton = async (a) => {
+    try {
+      if (a === "a") {
+        await getData('order/lanjutOrder/' + orderList.data.id);
+        detailOrder()
+      }
+      if (a === "c") {
+        await getData('order/selesaiOrder/' + orderList.data.id);
+        detailOrder()
+      }
+      if (a === "b") {
+        await getData('order/cancelOrder/' + orderList.data.id);
+        detailOrder()
+      }
+    } catch (error) {
+      console.log('order/lanjutOrder/' + orderList.data.id)
+    }
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -287,15 +334,15 @@ const HomeScreen = ({ navigation }) => {
             <Image source={require("../../assets/logo.png")} style={styles.markerImage} />
           </View>
         </Marker>
-        {/* <Marker coordinate={pickupLocation} pinColor='red' title='Origin' /> */}
-        {/* <Marker coordinate={destinationLocation} pinColor='green' title='Destination' /> */}
-        {/* <Polyline coordinates={coordinates} strokeColor="#37AFE1" strokeWidth={4} /> */}
-        {/* {driverLocation.latitude !== 0 && statusDriver === 0 && findDriver &&
-            <Polyline coordinates={[pickupLocation, driverLocation]} strokeColor="#37AFE1" strokeWidth={4} />
-          } */}
-        {/* {findDriver &&
-            <Marker coordinate={driverLocation} pinColor='blue' title='Driver' />
-          } */}
+        {orderList.data !== null &&
+          <Marker coordinate={pickupLocation} pinColor='red' title='Origin' />
+        }
+        {orderList.data !== null &&
+          <Marker coordinate={destinationLocation} pinColor='green' title='Destination' />
+        }
+        {orderList.data !== null &&
+          <Polyline coordinates={coordinate} strokeColor="#37AFE1" strokeWidth={4} />
+        }
       </MapView>
       <View style={{ alignItems: 'center', position: 'absolute', top: 0, left: 10, right: 10 }}>
         <Image source={require("../../assets/logo2.png")} style={{ width: 100, height: 100 }} />
@@ -318,6 +365,32 @@ const HomeScreen = ({ navigation }) => {
         actions={() => ambilOrder()}
         isOrder={isorder}
         desc={bodyInfo} />
+      <ModalSearchView
+        asal={orderList?.data?.pickupLocation?.address}
+        tujuan={orderList?.data?.destinationLocation?.address}
+        modalSearchBarShow={orderList.data !== null}
+      />
+      {orderList.data !== null &&
+        <ModalUser
+          title={"asd"}
+          desc={"hjk"}
+          isVisible={orderList.data !== null}
+          actions={(a) => actionsButton(a)}
+          call={() => navigation.navigate("Call", {
+            idDriver: 0
+          })}
+          chat={() => navigation.navigate("Chat", {
+            idDriver: orderList.data.idDriver,
+            idOrder: orderList.data.id,
+            idUser: orderList.data.idUser
+          })}
+          selesai={() => navigation.replace("Rating", {
+            idInvoice: 'INV 123.2123'
+          })}
+          status={orderList?.data?.status}
+          data={orderList}
+          driverLocation={driverLocation} />
+      }
     </View>
   );
 };
