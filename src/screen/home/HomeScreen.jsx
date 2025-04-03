@@ -12,6 +12,7 @@ import ModalNotifikasi from '../../component/ModalNotifikasi';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { ModalSearchView } from '../feature/trasride/component/SearchComponent';
 import ModalUser from '../../component/ModaUser';
+import { ToggleButtonComponent } from '../../component/ButtonComponent';
 
 
 const { width } = Dimensions.get('window');
@@ -196,14 +197,14 @@ const HomeScreen = ({ navigation }) => {
         setisorder(true)
         settitleInfo(remoteMessage.notification.title)
         setbodyInfo(remoteMessage.notification.body)
-       getProfileUser();
+        getProfileUser();
       } else {
         setidOrder("")
         setisorder(false)
         setmodalInfo(true)
         settitleInfo(remoteMessage.notification.title)
         setbodyInfo(remoteMessage.notification.body)
-       getProfileUser();
+        getProfileUser();
       }
     });
     return unsubscribe;
@@ -221,14 +222,14 @@ const HomeScreen = ({ navigation }) => {
         if (remoteMessage.data?.forceOpen === 'true') {
           Linking.openURL('myapp://home');
         }
-       getProfileUser();
+        getProfileUser();
       } else {
         setidOrder("")
         setisorder(false)
         setmodalInfo(true)
         settitleInfo(remoteMessage.notification.title)
         setbodyInfo(remoteMessage.notification.body)
-       getProfileUser();
+        getProfileUser();
       }
     }, []);
 
@@ -246,14 +247,14 @@ const HomeScreen = ({ navigation }) => {
             if (remoteMessage.data?.forceOpen === 'true') {
               Linking.openURL('myapp://home');
             }
-           getProfileUser();
+            getProfileUser();
           } else {
             setidOrder("")
             setisorder(false)
             setmodalInfo(true)
             settitleInfo(remoteMessage.notification.title)
             setbodyInfo(remoteMessage.notification.body)
-           getProfileUser();
+            getProfileUser();
           }
         }
       });
@@ -347,12 +348,17 @@ const HomeScreen = ({ navigation }) => {
       <View style={{ alignItems: 'center', position: 'absolute', top: 0, left: 10, right: 10 }}>
         <Image source={require("../../assets/logo2.png")} style={{ width: 100, height: 100 }} />
       </View>
+      <View style={styles.balanceBar2}>
+
+        <ToggleButtonComponent balance={user.balance} />
+      </View>
+
       <View style={styles.balanceBar}>
         <View>
           <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Deposit</Text>
           <Text style={[COMPONENT_STYLES.textMedium, { fontWeight: 600 }]}>{user.balance.toLocaleString('id')}</Text>
         </View>
-        <TouchableOpacity onPress={()=> navigation.navigate("Akun")} style={{ alignItems: 'center' }}>
+        <TouchableOpacity onPress={() => navigation.navigate("Akun")} style={{ alignItems: 'center' }}>
           <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Pengaturan</Text>
           <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Deposit</Text>
         </TouchableOpacity>
@@ -444,6 +450,13 @@ const styles = StyleSheet.create({
     bottom: 20,
     left: 10,
     right: 10
+  },
+  balanceBar2: {
+    padding: 20,
+    position: 'absolute',
+    bottom: 80,
+    left: 100,
+    right: 100
   },
   map: {
     flex: 1

@@ -1,8 +1,9 @@
 // filepath: /Users/hilmanzu/Documents/mobileReact/Trasgo/src/component/ButtonComponent.jsx
-import React, { useState } from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, Animated, PanResponder, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, Animated, PanResponder, View, Alert } from 'react-native';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS, FONT_FAMILIES } from '../lib/constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { getData, postData } from '../api/service';
 
 const ButtonComponent = ({ title, onPress, iconName, iconSize = 24, iconColor = COLORS.text, style, isLoading = false }) => {
   return (
@@ -74,6 +75,65 @@ const ButtonSlideComponent = ({ title, onSlideComplete, style }) => {
   );
 };
 
+const ToggleButtonComponent = ({
+  titleOn = "Aktif",
+  titleOff = "Nonaktif",
+  iconOn = "checkmark-circle",
+  iconOff = "close-circle",
+  onToggle,
+  balance,
+  style
+}) => {
+  const [isToggled, setIsToggled] = useState(false);
+
+  const handleToggle = async () => {
+    if(balance >= 3000){
+      const newState = !isToggled;
+      setIsToggled(newState);
+      await postData('auth/updateStatusDriver',{isStandby: newState});
+      detailOrder()
+      if (onToggle) {
+        onToggle(newState);
+      }
+    }else{
+      Alert.alert("Opss","Deposit kurang, mohon topup ke admin Trasgo dii button Pengaturan Deposit")
+    }
+  };
+
+  const detailOrder = async () => {
+      try {
+        if(balance <= 0)
+        {
+          setIsToggled(false)
+        }else{
+          var response = await getData('auth/updateStatusDriver');
+          setIsToggled(response.data.isStandby)
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+  useEffect(() => {
+    detailOrder();
+  }, []);
+
+  return (
+    <TouchableOpacity
+      style={[styles.toggleButton, isToggled ? styles.buttonOn : styles.buttonOff, style]}
+      onPress={handleToggle}
+    >
+      <Ionicons
+        name={isToggled ? iconOn : iconOff}
+        size={24}
+        color={COLORS.background}
+        style={styles.icon}
+      />
+      <Text style={styles.buttonText}>{isToggled ? titleOn : titleOff}</Text>
+    </TouchableOpacity>
+  );
+};
+
 const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
@@ -110,24 +170,46 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   slider: {
-    width:59,
+    width: 59,
     height: 50,
     backgroundColor: COLORS.background,
     borderRadius: BORDER_RADIUS.medium,
     position: 'absolute',
     left: 5,
-    top:5,
-    bottom:5,
+    top: 5,
+    bottom: 5,
     justifyContent: 'center',
     alignItems: 'center',
   },
   sliderText: {
     fontSize: 24,
   },
+  toggleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SPACING.medium,
+    borderRadius: BORDER_RADIUS.medium,
+  },
+  buttonOn: {
+    backgroundColor: COLORS.success, // Warna hijau saat aktif
+  },
+  buttonOff: {
+    backgroundColor: COLORS.warning, // Warna merah saat nonaktif
+  },
+  buttonText: {
+    fontSize: FONT_SIZES.medium,
+    color: COLORS.background,
+    fontFamily: FONT_FAMILIES.regular,
+  },
+  icon: {
+    marginRight: SPACING.small,
+  },
 });
 
-export{
+export {
   ButtonComponent,
   ButtonSecondaryComponent,
-  ButtonSlideComponent
+  ButtonSlideComponent,
+  ToggleButtonComponent
 }
