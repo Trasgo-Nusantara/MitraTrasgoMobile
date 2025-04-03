@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Dimensions, StatusBar, ScrollView, Text, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Dimensions, StatusBar, ScrollView, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import { COLORS, COMPONENT_STYLES } from '../../lib/constants';
 import { useTranslation } from 'react-i18next';
 import { setLocale } from '../../lib/translations';
@@ -13,7 +13,7 @@ import ModalWarning from '../../component/ModalWaring';
 
 const { width } = Dimensions.get('window');
 
-const VerifikasiScreen = ({ route }) => {
+const VerifikasiScreen = ({ route, navigation }) => {
   const { phonenumber } = route.params
   const intervalRef = useRef(null);
   const { t } = useTranslation();
@@ -61,8 +61,19 @@ const VerifikasiScreen = ({ route }) => {
     };
     try {
       const response = await postData('otp/validateWA', formData);
-      await AsyncStorage.setItem('accessTokens', response.message.accessToken);
-      setloading(false)
+      console.log(response.message.idRole)
+      if(response.message.idRole === "2")
+      {
+        await AsyncStorage.setItem('accessTokens', response.message.accessToken);
+        setloading(false)
+      } else {
+        Alert.alert(
+          "Opss",
+          "Nomor ini belum terhubung ke fasilitas driver Trasgo",
+          [{ text: "OK", onPress: () => navigation.goBack() }]
+        );
+        setloading(false)
+      }
     } catch (error) {
       setmodalWarning(true)
       setwarning(error.response.data.message)

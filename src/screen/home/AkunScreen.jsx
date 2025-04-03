@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, StatusBar, ScrollView, Text, Image, TouchableOpacity, Alert, Platform, PermissionsAndroid } from 'react-native';
+import { View, StyleSheet, Dimensions, StatusBar, ScrollView, Text, Image, TouchableOpacity, Alert, Platform, PermissionsAndroid, Linking } from 'react-native';
 import { BORDER_RADIUS, COLORS, COMPONENT_STYLES } from '../../lib/constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ModalInfo from '../../component/ModalInfo';
@@ -40,19 +40,27 @@ const AkunScreen = ({ navigation }) => {
     getProfileUser();
   }, []);
 
+  const openWhatsApp = () => {
+    const phoneNumber = '+6281310531713';
+    const message = encodeURIComponent('Hallo admin. Saya mau isi saldo Traspay untuk driver, boleh kirimkan QRIS-nya?');
+    const url = `https://wa.me/${phoneNumber}?text=${message}`;
+  
+    Linking.openURL(url).catch(err => console.error('Gagal membuka WhatsApp', err));
+  };
+
   const menu = [
-    {
-      name: t('menuAkun.profile'),
-      iconName: "person-circle-outline",
-    },
-    {
-      name: t('menuAkun.referal'),
-      iconName: "people-circle-outline"
-    },
-    {
-      name: t('menuAkun.alamat'),
-      iconName: "map-outline"
-    },
+    // {
+    //   name: t('menuAkun.profile'),
+    //   iconName: "person-circle-outline",
+    // },
+    // {
+    //   name: t('menuAkun.referal'),
+    //   iconName: "people-circle-outline"
+    // },
+    // {
+    //   name: t('menuAkun.alamat'),
+    //   iconName: "map-outline"
+    // },
     {
       name: t('menuAkun.term'),
       iconName: "newspaper-outline"
@@ -90,7 +98,7 @@ const AkunScreen = ({ navigation }) => {
         </View>
         <View style={COMPONENT_STYLES.spacer} />
         <View style={COMPONENT_STYLES.spacer} />
-        <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'space-around', flexDirection: 'row', backgroundColor: COLORS.primary, padding: 10, height: 100, borderRadius: 10 }}>
+        <TouchableOpacity onPress={()=> openWhatsApp()} style={{ alignItems: 'center', justifyContent: 'space-around', flexDirection: 'row', backgroundColor: COLORS.primary, padding: 10, height: 100, borderRadius: 10 }}>
           <View style={{ padding: 10 }}>
             <View style={{ padding: 10, paddingHorizontal: 15, backgroundColor: 'white', flex: 1, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
               <Ionicons name="wallet-outline" size={32} color="black" />
@@ -98,7 +106,7 @@ const AkunScreen = ({ navigation }) => {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={[COMPONENT_STYLES.textLarge, { color: 'white' }]}>
-              Traspay
+              TopUp Deposit
             </Text>
             <Text style={[COMPONENT_STYLES.textMedium, { color: 'white' }]}>
               Rp {user.balance.toLocaleString('id')}

@@ -199,6 +199,23 @@ const HomeStack = () => {
               </View>
             ),
           })} />
+          <Stack.Screen
+          name="Akun"
+          component={AkunScreen}
+          options={({ navigation }) => ({
+            title: t('updateScreen.header'),
+            headerShown: true,
+            headerStyle: {
+              elevation: 0, // Remove elevation on Android
+              shadowOpacity: 0, // Remove shadow on iOS
+            },
+            headerShadowVisible: false,
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Ionicons name="chevron-back-outline" size={32} color="black" style={{ marginRight: 20 }} />
+              </TouchableOpacity>
+            ),
+          })} />
       </Stack.Navigator>
       </>
   )

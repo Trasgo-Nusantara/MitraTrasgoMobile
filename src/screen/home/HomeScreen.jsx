@@ -352,8 +352,8 @@ const HomeScreen = ({ navigation }) => {
           <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Deposit</Text>
           <Text style={[COMPONENT_STYLES.textMedium, { fontWeight: 600 }]}>{user.balance.toLocaleString('id')}</Text>
         </View>
-        <TouchableOpacity style={{ alignItems: 'center' }}>
-          <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>TopUp</Text>
+        <TouchableOpacity onPress={()=> navigation.navigate("Akun")} style={{ alignItems: 'center' }}>
+          <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Pengaturan</Text>
           <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Deposit</Text>
         </TouchableOpacity>
       </View>
