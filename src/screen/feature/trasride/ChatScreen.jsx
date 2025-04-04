@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  View, StyleSheet, StatusBar, ScrollView, Text, TextInput, TouchableOpacity, Image
+  View,
+  StyleSheet,
+  StatusBar,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { COLORS, COMPONENT_STYLES } from '../../../lib/constants';
 import { postData } from '../../../api/service';
 import messaging from '@react-native-firebase/messaging';
-import RNFS from 'react-native-fs';
-
 
 const ChatScreen = ({ route }) => {
   const { idDriver, idOrder, idUser } = route.params;
@@ -17,13 +22,21 @@ const ChatScreen = ({ route }) => {
   const [imageUri, setImageUri] = useState(null);
   const scrollViewRef = useRef();
 
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const sendMessage = async () => {
     if (message.trim() !== '' || imageUri) {
-      const newMessage = { id: messages.length + 1, text: message, sender: 'user', image: imageUri };
-      setMessages(prevMessages => [...prevMessages, newMessage]);
+      const newMessage = {
+        id: messages.length + 1,
+        text: message,
+        sender: 'user',
+        image: imageUri,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       setMessage('');
       setImageUri(null);
-      const form = new FormData();
+
       if (imageUri) {
         const formData = new FormData();
         formData.append('file', {
@@ -31,6 +44,7 @@ const ChatScreen = ({ route }) => {
           type: 'image/jpeg',
           name: `photo_${Date.now()}.jpg`,
         });
+
         try {
           const response = await postData('file/upload', formData);
           const forms = {
@@ -39,7 +53,7 @@ const ChatScreen = ({ route }) => {
             idUser,
             message,
             image: response.path,
-          }
+          };
           await postData(`Chat/sendWA`, forms);
           getProfileUser();
         } catch (error) {
@@ -51,8 +65,8 @@ const ChatScreen = ({ route }) => {
           idOrder,
           idUser,
           message,
-          image: "",
-        }
+          image: '',
+        };
         await postData(`Chat/sendWA`, forms);
         getProfileUser();
       }
@@ -82,7 +96,7 @@ const ChatScreen = ({ route }) => {
   }, [messages]);
 
   const pickImage = () => {
-    launchImageLibrary({ mediaType: 'photo' }, response => {
+    launchImageLibrary({ mediaType: 'photo' }, (response) => {
       if (response.assets && response.assets.length > 0) {
         setImageUri(response.assets[0].uri);
       }
@@ -90,7 +104,7 @@ const ChatScreen = ({ route }) => {
   };
 
   const takePhoto = () => {
-    launchCamera({ mediaType: 'photo' }, response => {
+    launchCamera({ mediaType: 'photo' }, (response) => {
       if (response.assets && response.assets.length > 0) {
         setImageUri(response.assets[0].uri);
       }
@@ -101,15 +115,56 @@ const ChatScreen = ({ route }) => {
     <View style={[COMPONENT_STYLES.container, { padding: 0 }]}>
       <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
 
+      {/* Modal Gambar */}
+      {selectedImage && (
+        <View style={styles.modalContainer} pointerEvents={isModalVisible ? 'auto' : 'none'}>
+          {isModalVisible && (
+            <TouchableOpacity
+              style={styles.modalOverlay}
+              onPress={() => {
+                setIsModalVisible(false);
+                setSelectedImage(null);
+              }}
+            >
+              <Image
+                source={{ uri: selectedImage }}
+                style={styles.fullscreenImage}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
       <ScrollView
         contentContainerStyle={[COMPONENT_STYLES.scrollView, styles.chatContainer]}
         ref={scrollViewRef}
         keyboardShouldPersistTaps="handled"
       >
         {messages.map((msg) => (
-          <View key={msg.id} style={[styles.messageContainer, msg.sender === 'Mitra' ? styles.userMessage : styles.otherMessage]}>
-            {msg.image && <Image source={{ uri: msg.image }} style={{width:200,height:200, borderRadius:10}} />}
-            <View style={COMPONENT_STYLES.spacer} />
+          <View
+            key={msg.id}
+            style={[
+              styles.messageContainer,
+              msg.sender === 'Mitra' ? styles.userMessage : styles.otherMessage,
+            ]}
+          >
+            {msg.image && (
+              <>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedImage(msg.image);
+                    setIsModalVisible(true);
+                  }}
+                >
+                  <Image
+                    source={{ uri: msg.image }}
+                    style={{ width: 200, height: 200, borderRadius: 10 }}
+                  />
+                </TouchableOpacity>
+                <View style={COMPONENT_STYLES.spacer} />
+              </>
+            )}
             <Text style={styles.messageText}>{msg.message}</Text>
           </View>
         ))}
@@ -120,7 +175,6 @@ const ChatScreen = ({ route }) => {
           <View style={COMPONENT_STYLES.spacer} />
           <Image source={{ uri: imageUri }} style={styles.previewImage} />
           <View style={COMPONENT_STYLES.spacer} />
-
           <TouchableOpacity onPress={() => setImageUri(null)} style={styles.closeButton}>
             <Ionicons name="close-circle" size={30} color="red" />
           </TouchableOpacity>
@@ -128,7 +182,6 @@ const ChatScreen = ({ route }) => {
       )}
 
       <View style={styles.inputContainer}>
-
         <TouchableOpacity style={styles.iconButton} onPress={takePhoto}>
           <Ionicons name="camera" size={24} color={COLORS.primary} />
         </TouchableOpacity>
@@ -162,11 +215,11 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#00000080',
   },
   otherMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: "black",
+    backgroundColor: COLORS.primary,
   },
   messageText: {
     fontSize: 16,
@@ -200,7 +253,8 @@ const styles = StyleSheet.create({
   },
   previewContainer: {
     alignItems: 'center',
-    marginBottom: 10,borderWidth: 0.5,
+    marginBottom: 10,
+    borderWidth: 0.5,
     borderColor: 'gray',
     borderRadius: 10,
     backgroundColor: 'white',
@@ -217,6 +271,28 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -10,
     right: -10,
+  },
+  modalContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    zIndex: 999,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  fullscreenImage: {
+    width: '90%',
+    height: '80%',
+    borderRadius: 10,
   },
 });
 
