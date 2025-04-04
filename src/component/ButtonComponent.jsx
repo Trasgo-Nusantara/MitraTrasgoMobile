@@ -1,6 +1,6 @@
 // filepath: /Users/hilmanzu/Documents/mobileReact/Trasgo/src/component/ButtonComponent.jsx
-import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, Animated, PanResponder, View, Alert } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, Animated, PanResponder, View, Alert, Linking } from 'react-native';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS, FONT_FAMILIES } from '../lib/constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { getData, postData } from '../api/service';
@@ -86,42 +86,71 @@ const ToggleButtonComponent = ({
 }) => {
   const [isToggled, setIsToggled] = useState(false);
 
-  const handleToggle = async () => {
-    if(balance >= 3000){
-      const newState = !isToggled;
-      setIsToggled(newState);
-      await postData('auth/updateStatusDriver',{isStandby: newState});
-      detailOrder()
-      if (onToggle) {
-        onToggle(newState);
+  const detailOrder = useCallback(async () => {
+    try {
+      const response = await getData("auth/updateStatusDriver");
+      if (response?.status?.isStandby !== undefined) {
+        setIsToggled(response.status.isStandby);
       }
-    }else{
-      Alert.alert("Opss","Deposit kurang, mohon topup ke admin Trasgo dii button Pengaturan Deposit")
+    } catch (error) {
+      console.error("Error fetching driver status:", error);
     }
-  };
-
-  const detailOrder = async () => {
-      try {
-        if(balance <= 0)
-        {
-          setIsToggled(false)
-        }else{
-          var response = await getData('auth/updateStatusDriver');
-          setIsToggled(response.data.isStandby)
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  }, []);
 
   useEffect(() => {
     detailOrder();
-  }, []);
+    const intervalId = setInterval(detailOrder, 10000);
+    return () => clearInterval(intervalId);
+  }, [detailOrder]);
+
+  const handleToggle = async () => {
+    if (balance.data.balance < 3000) {
+      Alert.alert(
+        "Opss",
+        "Deposit kurang, mohon topup ke admin Trasgo di button Pengaturan Deposit",
+        [
+          {
+            text: "Topup Sekarang",
+            onPress: () => {
+              const phoneNumber = '+6281310531713';
+              const message = encodeURIComponent('Hallo admin. Saya mau isi saldo Traspay untuk driver, boleh kirimkan QRIS-nya?');
+              const url = `https://wa.me/${phoneNumber}?text=${message}`;
+              Linking.openURL(url).catch(err => console.error('Gagal membuka WhatsApp', err));
+            },
+          },
+          {
+            text: "Nanti Saja",
+            style: "cancel",
+          }
+        ]
+      );
+      return;
+    }
+
+    const newState = !isToggled;
+    setIsToggled(newState);
+
+    try {
+      await postData("auth/updateStatusDriver", { isStandby: newState });
+      detailOrder(); // Pastikan data di-refresh setelah perubahan status
+      if (onToggle) {
+        onToggle(newState);
+      }
+    } catch (error) {
+      console.error("Error updating driver status:", error);
+      setIsToggled(!newState); // Revert state jika gagal update
+    }
+  };
 
   return (
     <TouchableOpacity
-      style={[styles.toggleButton, isToggled ? styles.buttonOn : styles.buttonOff, style]}
+      style={[
+        styles.toggleButton,
+        isToggled ? styles.buttonOn : styles.buttonOff,
+        style,
+      ]}
       onPress={handleToggle}
+    // disabled={balance < 3000} // Disable tombol jika saldo kurang
     >
       <Ionicons
         name={isToggled ? iconOn : iconOff}

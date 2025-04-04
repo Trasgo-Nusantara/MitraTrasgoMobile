@@ -131,11 +131,8 @@ const HomeScreen = ({ navigation }) => {
 
   const getProfileUser = async () => {
     try {
-      const response = await getData('auth/verifySessions');
-      setUser(response.data)
-      if (response.data.fullName === "") {
-        navigation.navigate("UpdateProfile")
-      }
+      const response = await getData('auth/updateStatusDriver');
+      setUser(response)
     } catch (error) {
       console.error(error);
     }
@@ -154,7 +151,6 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     getFCM();
     getCurrentLocation();
-    getProfileUser();
   }, []);
 
   const handleUserLocationChange = async (event) => {
@@ -219,9 +215,6 @@ const HomeScreen = ({ navigation }) => {
         settitleInfo(remoteMessage.notification.title)
         setisorder(true)
         setbodyInfo(remoteMessage.notification.body)
-        if (remoteMessage.data?.forceOpen === 'true') {
-          Linking.openURL('myapp://home');
-        }
         getProfileUser();
       } else {
         setidOrder("")
@@ -244,9 +237,6 @@ const HomeScreen = ({ navigation }) => {
             settitleInfo(remoteMessage.notification.title)
             setisorder(true)
             setbodyInfo(remoteMessage.notification.body)
-            if (remoteMessage.data?.forceOpen === 'true') {
-              Linking.openURL('myapp://home');
-            }
             getProfileUser();
           } else {
             setidOrder("")
@@ -289,8 +279,10 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     detailOrder();
+    getProfileUser();
     const intervalId = setInterval(() => {
       detailOrder();
+      getProfileUser();
     }, 5000);
     return () => clearInterval(intervalId);
   }, []);
@@ -350,13 +342,13 @@ const HomeScreen = ({ navigation }) => {
       </View>
       <View style={styles.balanceBar2}>
 
-        <ToggleButtonComponent balance={user.balance} />
+        <ToggleButtonComponent balance={user} />
       </View>
 
       <View style={styles.balanceBar}>
         <View>
           <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Deposit</Text>
-          <Text style={[COMPONENT_STYLES.textMedium, { fontWeight: 600 }]}>{user.balance.toLocaleString('id')}</Text>
+          <Text style={[COMPONENT_STYLES.textMedium, { fontWeight: 600 }]}>{user?.data?.balance.toLocaleString('id')}</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate("Akun")} style={{ alignItems: 'center' }}>
           <Text style={[COMPONENT_STYLES.textSmall, { fontWeight: 600 }]}>Pengaturan</Text>
