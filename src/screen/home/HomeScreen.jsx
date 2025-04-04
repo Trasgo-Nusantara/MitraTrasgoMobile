@@ -183,6 +183,8 @@ const HomeScreen = ({ navigation }) => {
   const [isorder, setisorder] = useState(false);
   const [idOrder, setidOrder] = useState("");
   const [orderList, setorderList] = useState("");
+  const [loadingList, setloadingList] = useState(true);
+
 
 
   useEffect(() => {
@@ -257,8 +259,10 @@ const HomeScreen = ({ navigation }) => {
       setdestinationLocation(response?.data?.destinationLocation)
       setcoordinate(response?.data?.coordinates)
       setorderList(response)
+      setloadingList(false)
     } catch (error) {
       console.error(error);
+      setloadingList(false)
     }
   };
 
@@ -363,12 +367,14 @@ const HomeScreen = ({ navigation }) => {
         actions={() => ambilOrder()}
         isOrder={isorder}
         desc={bodyInfo} />
-      <ModalSearchView
-        asal={orderList?.data?.pickupLocation?.address}
-        tujuan={orderList?.data?.destinationLocation?.address}
-        modalSearchBarShow={orderList.data !== null}
-      />
-      {orderList.data !== null &&
+      {loadingList == false &&
+        <ModalSearchView
+          asal={orderList?.data?.pickupLocation?.address}
+          tujuan={orderList?.data?.destinationLocation?.address}
+          modalSearchBarShow={orderList.data !== null}
+        />
+      }
+      {orderList.data !== null && loadingList == false &&
         <ModalUser
           title={"asd"}
           desc={"hjk"}

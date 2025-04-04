@@ -1,27 +1,29 @@
 import axios from 'axios';
-import ModalWarning from '../component/ModalWaring';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Base URL API
-const API_URL = 'https://backendtrasgo-609517395039.asia-southeast1.run.app/api/v1/'; // Ganti dengan URL API Anda
+const API_URL = 'https://backendtrasgo-609517395039.asia-southeast1.run.app/api/v1/';
 
 // Membuat instance Axios
 const api = axios.create({
   baseURL: API_URL,
   timeout: 100000, // Timeout 10 detik
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Interceptor untuk menambahkan accessToken ke setiap request
 api.interceptors.request.use(
   async (config) => {
     try {
-      // Ambil token dari penyimpanan lokal (AsyncStorage)
       const token = await getToken();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+      }
+
+      // Pastikan tidak menimpa Content-Type untuk multipart/form-data
+      if (config.data instanceof FormData) {
+        config.headers['Content-Type'] = 'multipart/form-data';
+      } else {
+        config.headers['Content-Type'] = 'application/json';
       }
     } catch (error) {
       console.error('Error getting token:', error);
@@ -32,10 +34,9 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => response, // Jika sukses, langsung return response
+  (response) => response,
   (error) => {
     if (error.response) {
-      // Jika server merespons dengan status error
       const { status, data } = error.response;
 
       switch (status) {
@@ -58,22 +59,18 @@ api.interceptors.response.use(
           console.error(`⚠️ [${status}] Error tidak terduga:`, data?.message || 'Terjadi kesalahan');
       }
     } else if (error.request) {
-      // Jika tidak mendapat respons dari server
       console.error('⏳ Tidak ada respons dari server, periksa koneksi jaringan Anda');
     } else {
-      // Jika terjadi kesalahan lain
       console.error('⚠️ Error:', error.message);
     }
 
-    return Promise.reject(error); // Tetap lempar error agar bisa ditangani di level komponen
+    return Promise.reject(error);
   }
 );
 
-// Fungsi untuk mendapatkan token (simulasi dari AsyncStorage)
+// Fungsi untuk mendapatkan token dari AsyncStorage
 const getToken = async () => {
-  // Contoh: Gantilah dengan AsyncStorage atau metode penyimpanan lainnya
-  const acc = await AsyncStorage.getItem('accessTokens');
-  return acc; 
+  return await AsyncStorage.getItem('accessTokens');
 };
 
 export default api;

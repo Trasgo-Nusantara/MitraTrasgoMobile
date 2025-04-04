@@ -1,76 +1,138 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, StyleSheet, Dimensions, StatusBar, ScrollView, Text, TextInput, TouchableOpacity } from 'react-native';
+import {
+  View, StyleSheet, StatusBar, ScrollView, Text, TextInput, TouchableOpacity, Image
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { COLORS, COMPONENT_STYLES } from '../../../lib/constants';
 import { postData } from '../../../api/service';
+import messaging from '@react-native-firebase/messaging';
+import RNFS from 'react-native-fs';
 
-const { width } = Dimensions.get('window');
 
 const ChatScreen = ({ route }) => {
-  const { idDriver, idOrder, idUser } = route.params
-  const [message, setMessage] = useState(''); // Untuk mengontrol input pesan
-  const [messages, setMessages] = useState([
-    // { id: 1, text: 'Halo! Titik jemput sesuai aplikasi ?', sender: 'other' },
-  ]);
-
-  // Referensi ScrollView untuk memanipulasi scroll
+  const { idDriver, idOrder, idUser } = route.params;
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [imageUri, setImageUri] = useState(null);
   const scrollViewRef = useRef();
 
-  // Fungsi untuk menangani pengiriman pesan
   const sendMessage = async () => {
-    if (message.trim() !== '') {
-      const newMessage = { id: messages.length + 1, text: message, sender: 'user' };
-      setMessages([...messages, newMessage]);
+    if (message.trim() !== '' || imageUri) {
+      const newMessage = { id: messages.length + 1, text: message, sender: 'user', image: imageUri };
+      setMessages(prevMessages => [...prevMessages, newMessage]);
       setMessage('');
-      const form = {
-        idDriver: idDriver,
-        idOrder: idOrder,
-        idUser: idUser,
-        message: message,
+      setImageUri(null);
+      const form = new FormData();
+      if (imageUri) {
+        const formData = new FormData();
+        formData.append('file', {
+          uri: imageUri,
+          type: 'image/jpeg',
+          name: `photo_${Date.now()}.jpg`,
+        });
+        try {
+          const response = await postData('file/upload', formData);
+          const forms = {
+            idDriver,
+            idOrder,
+            idUser,
+            message,
+            image: response.path,
+          }
+          await postData(`Chat/sendWA`, forms);
+          getProfileUser();
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        const forms = {
+          idDriver,
+          idOrder,
+          idUser,
+          message,
+          image: "",
+        }
+        await postData(`Chat/sendWA`, forms);
+        getProfileUser();
       }
-      await postData(`Chat/sendWA`, form );
     }
   };
 
   const getProfileUser = useCallback(async () => {
-    const form = {
-      idDriver: idDriver,
-      idOrder: idOrder,
-      idUser: idUser
-    }
+    const form = { idDriver, idOrder, idUser };
     try {
       const response = await postData(`Chat/getWA`, form);
-      setMessages(response.message.data)
+      setMessages(response.message.data);
     } catch (error) {
-
+      console.error(error);
     }
-  }, []);
+  }, [idDriver, idOrder, idUser]);
 
-  // Gunakan useEffect untuk scroll otomatis ke bawah setiap kali ada perubahan pada pesan
+  useEffect(() => {
+    getProfileUser();
+    const unsubscribe = messaging().onMessage(async () => {
+      getProfileUser();
+    });
+    return () => unsubscribe();
+  }, [getProfileUser]);
+
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
-    getProfileUser();
-  }, [messages]); // Akan dijalankan setiap kali pesan berubah
+  }, [messages]);
+
+  const pickImage = () => {
+    launchImageLibrary({ mediaType: 'photo' }, response => {
+      if (response.assets && response.assets.length > 0) {
+        setImageUri(response.assets[0].uri);
+      }
+    });
+  };
+
+  const takePhoto = () => {
+    launchCamera({ mediaType: 'photo' }, response => {
+      if (response.assets && response.assets.length > 0) {
+        setImageUri(response.assets[0].uri);
+      }
+    });
+  };
 
   return (
     <View style={[COMPONENT_STYLES.container, { padding: 0 }]}>
       <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
+
       <ScrollView
         contentContainerStyle={[COMPONENT_STYLES.scrollView, styles.chatContainer]}
-        ref={scrollViewRef} // Menghubungkan ref ke ScrollView
+        ref={scrollViewRef}
+        keyboardShouldPersistTaps="handled"
       >
         {messages.map((msg) => (
-          <View
-            key={msg.id}
-            style={[styles.messageContainer, msg.sender === 'Mitra' ? styles.userMessage : styles.otherMessage]}
-          >
-            <Text style={[styles.messageText]}>{msg.message}</Text>
+          <View key={msg.id} style={[styles.messageContainer, msg.sender === 'Mitra' ? styles.userMessage : styles.otherMessage]}>
+            {msg.image && <Image source={{ uri: msg.image }} style={{width:200,height:200, borderRadius:10}} />}
+            <View style={COMPONENT_STYLES.spacer} />
+            <Text style={styles.messageText}>{msg.message}</Text>
           </View>
         ))}
       </ScrollView>
 
-      {/* Input Text dan Send Button */}
+      {imageUri && (
+        <View style={styles.previewContainer}>
+          <View style={COMPONENT_STYLES.spacer} />
+          <Image source={{ uri: imageUri }} style={styles.previewImage} />
+          <View style={COMPONENT_STYLES.spacer} />
+
+          <TouchableOpacity onPress={() => setImageUri(null)} style={styles.closeButton}>
+            <Ionicons name="close-circle" size={30} color="red" />
+          </TouchableOpacity>
+        </View>
+      )}
+
       <View style={styles.inputContainer}>
+
+        <TouchableOpacity style={styles.iconButton} onPress={takePhoto}>
+          <Ionicons name="camera" size={24} color={COLORS.primary} />
+        </TouchableOpacity>
+
         <TextInput
           style={styles.textInput}
           value={message}
@@ -124,7 +186,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: COLORS.lightGray,
     borderRadius: 15,
-    marginRight: 10,
+    marginHorizontal: 10,
   },
   sendButton: {
     padding: 10,
@@ -132,6 +194,29 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  iconButton: {
+    padding: 10,
+  },
+  previewContainer: {
+    alignItems: 'center',
+    marginBottom: 10,borderWidth: 0.5,
+    borderColor: 'gray',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    padding: 10,
+    position: 'relative',
+    marginHorizontal: 10,
+  },
+  previewImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: -10,
+    right: -10,
   },
 });
 
