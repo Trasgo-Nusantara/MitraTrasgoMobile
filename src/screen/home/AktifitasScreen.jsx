@@ -45,11 +45,6 @@ const AktifitasScreen = ({ navigation }) => {
     return (
       <View style={[COMPONENT_STYLES.container, { padding: 0 }]}>
         <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
-        <View style={{ backgroundColor: 'white', height: 50 }}>
-          <Text style={[COMPONENT_STYLES.textLarge, { position: 'absolute', bottom: 0, marginLeft: 15 }]}>
-            {t('menuAktifitas.title')}
-          </Text>
-        </View>
         <View style={{justifyContent:'center',alignItems:'center',flex:1}}>
           <Text style={[COMPONENT_STYLES.textLarge]}>Belum ada Transaksi</Text>
         </View>
