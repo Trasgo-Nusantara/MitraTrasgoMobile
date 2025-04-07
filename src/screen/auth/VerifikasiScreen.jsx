@@ -62,8 +62,7 @@ const VerifikasiScreen = ({ route, navigation }) => {
     try {
       const response = await postData('otp/validateWA', formData);
       console.log(response.message.idRole)
-      if(response.message.idRole === "2")
-      {
+      if(response.message.idRole === "2" || response.message.idRole === "3"){
         await AsyncStorage.setItem('accessTokens', response.message.accessToken);
         setloading(false)
       } else {

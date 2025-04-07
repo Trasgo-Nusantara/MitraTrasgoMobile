@@ -13,6 +13,7 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import { ModalSearchView } from '../feature/trasride/component/SearchComponent';
 import ModalUser from '../../component/ModaUser';
 import { ToggleButtonComponent } from '../../component/ButtonComponent';
+import ModalLayanan from '../../component/ModalLayanan';
 
 
 const { width } = Dimensions.get('window');
@@ -22,6 +23,8 @@ const HomeScreen = ({ navigation }) => {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
+  const [layanan, setlayanan] = useState(false);
+
   const [fcm, setfcm] = useState("");
   const [pickupLocation, setpickupLocation] = useState(
     {
@@ -146,7 +149,6 @@ const HomeScreen = ({ navigation }) => {
     setfcm(fcmToken)
     await postData('auth/updateFCMUser', form);
   }
-
 
   useEffect(() => {
     getFCM();
@@ -310,42 +312,73 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  useEffect(() => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setDriverLocation({ latitude, longitude });
+      },
+      (error) => {
+        console.log("Error getting location", error);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+    console.log(user.data.idRole)
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
-      <MapView
-        ref={mapRef}
-        // provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        region={{
-          latitude: driverLocation.latitude,
-          longitude: driverLocation.longitude,
-          latitudeDelta: 0.015,
-          longitudeDelta: 0.0121,
-        }}
-        onUserLocationChange={handleUserLocationChange}
-        showsUserLocation={true}
-      >
-        <Marker coordinate={driverLocation} anchor={{ x: 0.5, y: 0.5 }}>
-          <View style={[styles.markerContainer, { backgroundColor: 'white' }]}>
-            <Image source={require("../../assets/logo.png")} style={styles.markerImage} />
-          </View>
-        </Marker>
-        {orderList.data !== null &&
-          <Marker coordinate={pickupLocation} pinColor='red' title='Origin' />
-        }
-        {orderList.data !== null &&
-          <Marker coordinate={destinationLocation} pinColor='green' title='Destination' />
-        }
-        {orderList.data !== null &&
-          <Polyline coordinates={coordinate} strokeColor="#37AFE1" strokeWidth={4} />
-        }
-      </MapView>
+      {driverLocation && driverLocation.latitude && driverLocation.longitude ? (
+        <MapView
+          ref={mapRef}
+          // provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          region={{
+            latitude: driverLocation.latitude,
+            longitude: driverLocation.longitude,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
+          }}
+          onUserLocationChange={handleUserLocationChange}
+          showsUserLocation={true}
+        >
+          <Marker coordinate={driverLocation} anchor={{ x: 0.5, y: 0.5 }}>
+            <View style={[styles.markerContainer, { backgroundColor: 'white' }]}>
+              <Image source={require("../../assets/logo.png")} style={styles.markerImage} />
+            </View>
+          </Marker>
+          {orderList.data !== null &&
+            <Marker coordinate={pickupLocation} pinColor='red' title='Origin' />
+          }
+          {orderList.data !== null &&
+            <Marker coordinate={destinationLocation} pinColor='green' title='Destination' />
+          }
+          {orderList.data !== null &&
+            <Polyline coordinates={coordinate} strokeColor="#37AFE1" strokeWidth={4} />
+          }
+        </MapView>
+      ) : (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Memuat lokasi...</Text>
+        </View>
+      )}
       <View style={{ alignItems: 'center', position: 'absolute', top: 0, left: 10, right: 10 }}>
         <Image source={require("../../assets/logo2.png")} style={{ width: 100, height: 100 }} />
       </View>
+      <TouchableOpacity onPress={()=> setlayanan(true)} style={{ 
+        alignItems: 'center', 
+        position: 'absolute', 
+        top: 30,
+        left:20, 
+        backgroundColor: 'white', 
+        paddingVertical:10, 
+        paddingHorizontal:20, 
+        borderRadius:10 
+      }}>
+        <Text style={[COMPONENT_STYLES.textMedium, { fontWeight: 600 }]}>Layanan</Text>
+      </TouchableOpacity>
       <View style={styles.balanceBar2}>
-
         <ToggleButtonComponent balance={user} />
       </View>
 
@@ -395,6 +428,12 @@ const HomeScreen = ({ navigation }) => {
           data={orderList}
           driverLocation={driverLocation} />
       }
+      <ModalLayanan
+        idRole={user.data.idRole}
+        isVisible= {layanan}
+        setModalVisible= {setlayanan}
+        navigasi= {()=> Alert.alert("navigasi","test")}
+      />
     </View>
   );
 };
