@@ -341,7 +341,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
-      {driverLocation && driverLocation.latitude && driverLocation.longitude ? (
+      {/* {driverLocation && driverLocation.latitude && driverLocation.longitude ? ( */}
         <MapView
           ref={mapRef}
           // provider={PROVIDER_GOOGLE}
@@ -370,11 +370,11 @@ const HomeScreen = ({ navigation }) => {
             <Polyline coordinates={coordinate} strokeColor="#37AFE1" strokeWidth={4} />
           }
         </MapView>
-      ) : (
+      {/* ) : (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text>Memuat lokasi...</Text>
         </View>
-      )}
+      )} */}
       <View style={{ alignItems: 'center', position: 'absolute', top: 0, left: 10, right: 10 }}>
         <Image source={require("../../assets/logo2.png")} style={{ width: 100, height: 100 }} />
       </View>
