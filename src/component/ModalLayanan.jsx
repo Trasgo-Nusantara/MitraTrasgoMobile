@@ -6,6 +6,7 @@ import { ButtonComponent, ButtonSecondaryComponent, ButtonSlideComponent } from 
 import { useTranslation } from 'react-i18next';
 import RadioButtonGroup from './RadioButtonComponent';
 import MultiSelectedChoice from './MultiSelectedChoice';
+import { postData } from '../api/service';
 
 const { width, height } = Dimensions.get('window');
 
@@ -31,6 +32,7 @@ const ModalLayanan = ({ isVisible, setModalVisible, navigasi, idRole }) => {
   useEffect(() => {
     if (isVisible) {
       const timer = setTimeout(() => {
+        setSelectedChoices(idRole?.status?.service);
         setAnimateModal(true);
       }, 100); // 0.5 seconds delay
       return () => clearTimeout(timer); // Clean up the timer if the modal visibility changes before the timeout
@@ -51,15 +53,26 @@ const ModalLayanan = ({ isVisible, setModalVisible, navigasi, idRole }) => {
     setSelectedValue(option.value);
   };
 
+  const detailOrder = async () => {
+    const form = {
+      service: selectedChoices,
+    }
+      try {
+        await postData('auth/updateServiceDriver',form);
+      } catch (error) {
+      }
+    };
+
   const handleNavigasi = () => {
     cancelButton()
     const timer = setTimeout(() => {
+      detailOrder()
       navigasi()
     }, 200); // 0.5 seconds delay
     return () => clearTimeout(timer);
   }
 
-  const filterIttems = options.filter((item) => item.idRole === idRole)
+  const filterIttems = options.filter((item) => item.idRole === idRole?.data?.idRole)
 
   return (
     <Modal

@@ -323,7 +323,6 @@ const HomeScreen = ({ navigation }) => {
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
-    console.log(user.data.idRole)
   }, []);
 
   return (
@@ -429,7 +428,7 @@ const HomeScreen = ({ navigation }) => {
           driverLocation={driverLocation} />
       }
       <ModalLayanan
-        idRole={user.data.idRole}
+        idRole={user}
         isVisible= {layanan}
         setModalVisible= {setlayanan}
         navigasi= {()=> Alert.alert("navigasi","test")}
