@@ -54,12 +54,13 @@ const ModalLayanan = ({ isVisible, setModalVisible, navigasi, idRole }) => {
   };
 
   const detailOrder = async () => {
-    const form = {
-      service: selectedChoices,
-    }
+    const formData = {
+      service: selectedChoices
+    };
       try {
-        await postData('auth/updateServiceDriver',form);
+        await postData('auth/updateServiceDriver',formData);
       } catch (error) {
+        console.error(error);
       }
     };
 

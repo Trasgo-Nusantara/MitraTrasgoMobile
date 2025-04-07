@@ -431,7 +431,7 @@ const HomeScreen = ({ navigation }) => {
         idRole={user}
         isVisible= {layanan}
         setModalVisible= {setlayanan}
-        navigasi= {()=> Alert.alert("navigasi","test")}
+        navigasi= {()=> console.log("navigasi")}
       />
     </View>
   );
