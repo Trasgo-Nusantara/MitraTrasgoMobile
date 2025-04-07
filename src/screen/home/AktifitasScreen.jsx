@@ -28,8 +28,8 @@ const AktifitasScreen = ({ navigation }) => {
 
   const getProfileUser = async () => {
     try {
-      const response = await getData('order/GetOrder');
-      const filtered = response.data.filter((a)=> a.status <= 3)
+      const response = await getData('order/GetOrderDriver');
+      const filtered = response.data.filter((a)=> a.status > 0)
       const sortedData = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setdata(sortedData)
     } catch (error) {
@@ -39,10 +39,6 @@ const AktifitasScreen = ({ navigation }) => {
 
   useEffect(() => {
     getProfileUser();
-    const intervalId = setInterval(() => {
-      getProfileUser();
-    }, 5000);
-    return () => clearInterval(intervalId);
   }, []);
 
   if (data.length === 0) {
@@ -63,11 +59,6 @@ const AktifitasScreen = ({ navigation }) => {
   return (
     <View style={[COMPONENT_STYLES.container, { padding: 0 }]}>
       <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
-      <View style={{ backgroundColor: 'white', height: 50 }}>
-        <Text style={[COMPONENT_STYLES.textLarge, { position: 'absolute', bottom: 0, marginLeft: 15 }]}>
-          {t('menuAktifitas.title')}
-        </Text>
-      </View>
       <ScrollView contentContainerStyle={[COMPONENT_STYLES.scrollView]}>
         {data.map((data, index) => {
           return (

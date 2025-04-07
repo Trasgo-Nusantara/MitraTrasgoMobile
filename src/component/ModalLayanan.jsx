@@ -16,12 +16,15 @@ const options = [
   { idRole : "2",label: 'TrasRide Cheaps', value: 'TrasRide Cheaps', ico: "logo-whatsapp" , desc: "Layanan antar jemput harga termurah" },
   { idRole : "2",label: 'TrasRide Periority', value: 'TrasRide Periority', ico: "logo-whatsapp", desc: "Harga lebih mahal pelayanan extra" },
   { idRole : "2",label: 'TrasRide Move', value: 'TrasRide Move', ico: "logo-whatsapp", desc: "Layanan antar jemput barang" },
+  { idRole : "2",label: 'TrasFood', value: 'TrasFood', ico: "logo-whatsapp", desc: "Layanan antar jemput makanan" },
   { idRole : "3",label: 'TrasCar', value: 'TrasCar', ico: "logo-whatsapp", desc: "Layanan antar jemput harga standard" },
   { idRole : "3",label: 'TrasCar MAX', value: 'TrasCar MAX', ico: "logo-whatsapp", desc: "Layanan antar jemput 6 Kursi" },
   { idRole : "3",label: 'TrasCar Cheaps', value: 'TrasCar Cheaps', ico: "logo-whatsapp", desc: "Layanan antar jemput harga termurah" },
   { idRole : "3",label: 'TrasCar Periority', value: 'TrasCar Periority', ico: "logo-whatsapp", desc: "Harga lebih mahal pelayanan extra" },
   { idRole : "3",label: 'TrasCar Move', value: 'TrasCar Move', ico: "logo-whatsapp", desc: "Layanan antar jemput barang" },
-  { idRole : "3",label: 'TrasCar Taxi', value: 'TrasCar Taxi', ico: "logo-whatsapp", desc: "Layanan antar jemput mengikuti harga hitungan taxi" },
+  { idRole : "4",label: 'TrasCar Taxi', value: 'TrasCar Taxi', ico: "logo-whatsapp", desc: "Layanan antar jemput mengikuti harga hitungan taxi" },
+  { idRole : "3",label: 'TrasFood', value: 'TrasFood', ico: "logo-whatsapp", desc: "Layanan antar jemput makanan" },
+
 ];
 
 const ModalLayanan = ({ isVisible, setModalVisible, navigasi, idRole }) => {
@@ -39,7 +42,7 @@ const ModalLayanan = ({ isVisible, setModalVisible, navigasi, idRole }) => {
     } else {
       setAnimateModal(false); // Reset animation when modal is closed
     }
-  }, [isVisible]);
+  }, [isVisible,idRole]);
 
   const cancelButton = () => {
     setAnimateModal(false);

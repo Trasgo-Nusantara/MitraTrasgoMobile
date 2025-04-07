@@ -166,10 +166,10 @@ const HomeStack = () => {
             ),
           })} />
         <Stack.Screen
-          name="DetailOrder"
-          component={DetailOrder}
+          name="Aktifitas"
+          component={AktifitasScreen}
           options={({ navigation }) => ({
-            title: 'Detail Order',
+            title: 'Daftar Aktifitas',
             headerShown: true,
             headerStyle: {
               elevation: 0, // Remove elevation on Android

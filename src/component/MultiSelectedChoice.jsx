@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { COMPONENT_STYLES } from '../lib/constants';
 
 const MultiSelectedChoice = ({ options = [], selected = [], onSelect }) => {
   const toggleOption = (value) => {
@@ -21,10 +22,10 @@ const MultiSelectedChoice = ({ options = [], selected = [], onSelect }) => {
             style={[styles.option, isSelected ? styles.optionOn : styles.optionOff]}
             onPress={() => toggleOption(option.value)}
           >
-            <Text style={[styles.optionText, isSelected ? styles.textOn : styles.textOff]}>
+            <Text style={[COMPONENT_STYLES.textMedium,styles.optionText, isSelected ? styles.textOn : styles.textOff]}>
               {option.label}
             </Text>
-            <Text style={[styles.optionText, isSelected ? styles.textOn : styles.textOff]}>
+            <Text style={[COMPONENT_STYLES.textSmall,styles.optionText, isSelected ? styles.textOn : styles.textOff]}>
               {option.desc}
             </Text>
           </TouchableOpacity>
@@ -57,7 +58,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
   optionText: {
-    fontSize: 16,
     fontWeight: '500',
   },
   textOn: {

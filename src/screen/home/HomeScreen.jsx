@@ -24,6 +24,7 @@ const HomeScreen = ({ navigation }) => {
 
   const [loading, setLoading] = useState(false);
   const [layanan, setlayanan] = useState(false);
+  const [order, setorder] = useState([]);
 
   const [fcm, setfcm] = useState("");
   const [pickupLocation, setpickupLocation] = useState(
@@ -289,6 +290,7 @@ const HomeScreen = ({ navigation }) => {
     const intervalId = setInterval(() => {
       detailOrder();
       getProfileUser();
+      getOrderDriver();
     }, 5000);
     return () => clearInterval(intervalId);
   }, []);
@@ -324,6 +326,17 @@ const HomeScreen = ({ navigation }) => {
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
   }, []);
+
+  const getOrderDriver = async () => {
+      try {
+        const response = await getData('order/GetOrderDriver');
+        const filtered = response.data.filter((a)=> a.status > 0)
+        const sortedData = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setorder(sortedData)
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
   return (
     <View style={{ flex: 1 }}>
@@ -376,6 +389,18 @@ const HomeScreen = ({ navigation }) => {
         borderRadius:10 
       }}>
         <Text style={[COMPONENT_STYLES.textMedium, { fontWeight: 600 }]}>Layanan</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={()=> navigation.navigate("Aktifitas")} style={{ 
+        alignItems: 'center', 
+        position: 'absolute', 
+        top: 30,
+        right:20, 
+        backgroundColor: 'white', 
+        paddingVertical:10, 
+        paddingHorizontal:20, 
+        borderRadius:10 
+      }}>
+        <Text style={[COMPONENT_STYLES.textMedium, { fontWeight: 600 }]}>{order.length} Trip</Text>
       </TouchableOpacity>
       <View style={styles.balanceBar2}>
         <ToggleButtonComponent balance={user} />
@@ -431,7 +456,7 @@ const HomeScreen = ({ navigation }) => {
         idRole={user}
         isVisible= {layanan}
         setModalVisible= {setlayanan}
-        navigasi= {()=> console.log("navigasi")}
+        navigasi= {()=> getProfileUser()}
       />
     </View>
   );
