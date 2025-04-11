@@ -6,6 +6,7 @@ import ModalInfo from '../../component/ModalInfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { getData } from '../../api/service';
+import ModalTopUp from '../../component/ModalTopUp';
 
 
 
@@ -15,6 +16,8 @@ const AkunScreen = ({ navigation }) => {
   const { t } = useTranslation();
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalTopupVisible, setModalTopupVisible] = useState(false);
+
 
   const [user, setUser] = useState({
     balance: 0,
@@ -41,11 +44,12 @@ const AkunScreen = ({ navigation }) => {
   }, []);
 
   const openWhatsApp = () => {
-    const phoneNumber = '+6281310531713';
-    const message = encodeURIComponent('Hallo admin. Saya mau isi saldo Traspay untuk driver, boleh kirimkan QRIS-nya?');
-    const url = `https://wa.me/${phoneNumber}?text=${message}`;
+    // const phoneNumber = '+6281310531713';
+    // const message = encodeURIComponent('Hallo admin. Saya mau isi saldo Traspay untuk driver, boleh kirimkan QRIS-nya?');
+    // const url = `https://wa.me/${phoneNumber}?text=${message}`;
   
-    Linking.openURL(url).catch(err => console.error('Gagal membuka WhatsApp', err));
+    // Linking.openURL(url).catch(err => console.error('Gagal membuka WhatsApp', err));
+    setModalTopupVisible(true)
   };
 
   const menu = [
@@ -131,6 +135,7 @@ const AkunScreen = ({ navigation }) => {
           )
         })}
       </ScrollView>
+      <ModalTopUp title={t('modalKeluarApp.title')} desc={t('modalKeluarApp.desc')} isVisible={modalTopupVisible} setModalVisible={setModalTopupVisible}/>
       <ModalInfo title={t('modalKeluarApp.title')} desc={t('modalKeluarApp.desc')} isVisible={modalVisible} setModalVisible={setModalVisible} actions={async () => await AsyncStorage.removeItem('accessTokens')} />
     </View>
   );
