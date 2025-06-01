@@ -40,17 +40,15 @@
     "otpTitle": "How would you like to receive the OTP?"
   },
   "button": {
-    "batal": "Cancel",
-    "pesan": "Book Now",
-    "keluar": "Log Out",
-    "konfirmasi": "Confirm",
-    "selesai": "Done",
-    "simpan": "Save",
-    "tutup": "Close",
-    "pilihkendaraan":"Pilih Kendaraan"
+    "batal": "Batal",
+    "pesan": "Pesan Sekarang",
+    "keluar": "Keluar",
+    "konfirmasi": "konfirmasi",
+    "tutup":"Tutup",
+    "pilihkendaraan":"Swipe untuk memilih kendaraan"  
   },
   "modalChoice": {
-    "PilihKendaraan": "Choice"
+    "PilihKendaraan": "Swipe untuk memilih kendaraan"
   },
   "modalKeluarApp": {
     "title": "Log Out of App",

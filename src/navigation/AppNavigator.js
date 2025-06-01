@@ -12,7 +12,7 @@ import { Image, View } from 'react-native';
 const AppNavigator = () => {
 
   const [isLoggedIn, setisLoggedIn] = useState(false);
-  const [load, setload] = useState(false);
+  const [load, setload] = useState(true);
 
   async function onAuthStateChanged() {
     const user = await AsyncStorage.getItem('accessTokens');
@@ -25,6 +25,8 @@ const AppNavigator = () => {
     }
   }
 
+  
+
   useEffect(() => {
     setload(true)
     setInterval(onAuthStateChanged, 500);
@@ -33,17 +35,16 @@ const AppNavigator = () => {
   if (load) {
     return (
       <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-        <Image source={require("../assets/logo2.png")} style={{ width: 200, height: 200 }} />
+        <Image source={require("../asset/logo.png")} style={{ width: 200, height: 200 }} />
       </View>
     )
   }
 
   return (
     // <SafeAreaView>
-    <NavigationContainer>
-      {isLoggedIn ? <MainNavigator /> : <AuthNavigator />}
-    </NavigationContainer>
-
+      <NavigationContainer>
+        {isLoggedIn ? <MainNavigator /> : <AuthNavigator />}
+      </NavigationContainer>
     // </SafeAreaView>
   );
 };

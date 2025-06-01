@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "image": "https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc",
+        "title": "Tips Investasi Properti",
+        "url": "https://www.example.com/tips-investasi-properti"
+    },
+    {
+        "id": 2,
+        "image": "https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image3_1728706413451.jpeg.enc",
+        "title": "Cara Mengelola Keuangan",
+        "url": "https://www.example.com/tips-investasi-properti"
+    },
+    {
+        "id": 3,
+        "image": "https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image2_1728706413397.jpeg.enc",
+        "title": "Strategi Patungan Efektif",
+        "url": "https://www.example.com/tips-investasi-properti"
+    }
+]

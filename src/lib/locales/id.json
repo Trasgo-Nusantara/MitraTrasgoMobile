@@ -43,10 +43,10 @@
     "keluar": "Keluar",
     "konfirmasi": "konfirmasi",
     "tutup":"Tutup",
-    "pilihkendaraan":"Pilih Kendaraan"
+    "pilihkendaraan":"Swipe Keatas untuk memilih kendaraan"  
   },
   "modalChoice": {
-    "PilihKendaraan": "Pilih Kendaraan"
+    "PilihKendaraan": "Swipe Keatas untuk memilih kendaraan"
   },
   "modalKeluarApp": {
     "title": "Keluar dari Aplikasi",

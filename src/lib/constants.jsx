@@ -1,5 +1,5 @@
 export const COLORS = {
-  primary: '#000000',
+  primary: '#37AFE1',
   secondary: '#FF6347',
   background: '#FFFFFF',
   backgroundSecondary: '#00000050',
@@ -13,6 +13,7 @@ export const COLORS = {
 };
 
 export const FONT_SIZES = {
+  smallXL: 12,
   small: 14,
   medium: 16,
   large: 20,
@@ -20,6 +21,7 @@ export const FONT_SIZES = {
 };
 
 export const SPACING = {
+  smallXL: 2,
   small: 5,
   medium: 13,
   large: 20,
@@ -59,6 +61,10 @@ export const COMPONENT_STYLES = {
     backgroundColor: COLORS.background,
     padding: SPACING.medium,
   },
+  textSmallXL:{
+    fontSize: FONT_SIZES.smallXL,
+    fontFamily: FONT_FAMILIES.regular
+  },
   textSmall:{
     fontSize: FONT_SIZES.small,
     fontFamily: FONT_FAMILIES.regular
@@ -74,6 +80,9 @@ export const COMPONENT_STYLES = {
   },
   spacer: {
     margin: SPACING.small,
+  },
+  spacerSmall: {
+    margin: SPACING.smallXL,
   },
 };
 

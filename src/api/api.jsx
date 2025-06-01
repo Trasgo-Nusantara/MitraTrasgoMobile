@@ -2,7 +2,9 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Base URL API
-const API_URL = 'https://backendtrasgo-609517395039.asia-southeast1.run.app/api/v1/';
+const API_URL = 'https://beres-backend-609517395039.asia-southeast2.run.app/api/v1/';
+// const API_URL = 'http://192.168.156.46:5000/api/v1/';
+
 
 // Membuat instance Axios
 const api = axios.create({
@@ -41,7 +43,8 @@ api.interceptors.response.use(
 
       switch (status) {
         case 400:
-          console.error('❌ [400] Bad Request:', data?.message || 'Permintaan tidak valid');
+          return Promise.reject(data?.errorMessage.Error); // Kembalikan error untuk ditangani di tempat lain
+          console.error('❌ [400] Bad Request:', data?.errorMessage.Error || 'Permintaan tidak valid');
           break;
         case 401:
           console.error('🔒 [401] Unauthorized: Token tidak valid atau kadaluarsa');
@@ -53,9 +56,11 @@ api.interceptors.response.use(
           console.error('🔍 [404] Not Found: Resource tidak ditemukan');
           break;
         case 500:
+          return Promise.reject(data?.errorMessage.Error);
           console.error('🔥 [500] Server Error:', data?.message || 'Terjadi kesalahan pada server');
           break;
         default:
+          return Promise.reject(data?.errorMessage.Error);
           console.error(`⚠️ [${status}] Error tidak terduga:`, data?.message || 'Terjadi kesalahan');
       }
     } else if (error.request) {
