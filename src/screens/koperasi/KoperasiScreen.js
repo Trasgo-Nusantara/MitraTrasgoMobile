@@ -180,12 +180,19 @@ const KoperasiScreen = ({ navigation }) => {
                         )}
 
                         <Text style={styles.sectionTitle}>Riwayat Iuran</Text>
-                        <FlatList
-                            data={history}
-                            renderItem={renderHistoryItem}
-                            keyExtractor={(item) => item.id}
-                            style={styles.historyList}
-                        />
+                        <View style={styles.historyList}>
+                            {history.map((item, idx) =>
+                                <View key={idx} style={styles.historyItem}>
+                                    <View>
+                                        <Text style={styles.historyTitle}>{item.ket}</Text>
+                                        <Text style={styles.historyDate}>{formatDateTime(item.createdAt)}</Text>
+                                    </View>
+                                    <Text style={[styles.historyAmount, item.status === 'Income' ? styles.income : styles.expense]}>
+                                        {item.status === 'Income' ? '+ ' : '- '}Rp {item?.nominal?.toLocaleString('id-ID')}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
                     </>
                 )}
             </ScrollView>

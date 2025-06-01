@@ -33,10 +33,12 @@ const MembershipCard = ({ navigation }) => {
     <View style={styles.membershipContainer}>
       {/* Bagian Saldo */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View style={styles.membershipBox}>
+        <TouchableOpacity onPress={()=> getDatabase()} style={styles.membershipBox}>
           <Text style={styles.membershipLabel}>Saldo</Text>
           <Text style={styles.membershipValue}>Rp {formatCurrency(data.balance)}</Text>
-        </View>
+          <Text style={styles.membershipLabel2}>Klik untuk update saldo</Text>
+
+        </TouchableOpacity>
         <View style={styles.membershipBox2}>
           <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => navigation.navigate('Saldo')}>
             <Icon name="plus-circle-outline" size={24} color="#000" />
@@ -110,9 +112,8 @@ const styles = StyleSheet.create({
   },
   membershipLabel2: {
     color: '#000',
-    fontSize: 16,
+    fontSize: 10,
     fontWeight: '600',
-    textAlign: 'right',
   },
   membershipValue: {
     color: '#000',

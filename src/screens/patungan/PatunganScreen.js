@@ -165,8 +165,8 @@ const PatunganScreen = ({ navigation }) => {
                     <ActivityIndicator size="large" color="#214937" style={{ marginTop: 30 }} />
                 ) : (
                     <View style={styles.cardContainer}>
-                        {PatunganData.map((item) => (
-                            <TouchableOpacity onPress={() => navigation.navigate("PatunganDetail", { data: item })} key={item} style={styles.card}>
+                        {PatunganData.map((item,idx) => (
+                            <TouchableOpacity onPress={() => navigation.navigate("PatunganDetail", { data: item })} key={idx} style={styles.card}>
                                 <PatunganComponent key={item} data={item} />
                             </TouchableOpacity>
                         ))}

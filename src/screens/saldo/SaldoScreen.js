@@ -79,7 +79,7 @@ const SaldoScreen = () => {
         Linking.openURL(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`);
     };
 
-    if(loading) {
+    if (loading) {
         return (
             <SafeAreaView style={styles.backgroundStyle}>
                 <StatusBar backgroundColor="#214937" barStyle="dark-content" />
@@ -92,39 +92,39 @@ const SaldoScreen = () => {
         <SafeAreaView style={styles.backgroundStyle}>
             <StatusBar backgroundColor="#214937" barStyle="dark-content" />
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                {loading ? (
-                    <ActivityIndicator size="large" color="#214937" style={{ marginTop: 30 }} />
-                ) : (
-                    <>
-                        {/* Saldo Section */}
-                        <View style={styles.saldoContainer}>
-                            <Icon name="money" size={24} color="#214937" style={{ marginRight: 10 }} />
-                            <Text style={styles.saldoText}>Rp {datas.balance.toLocaleString('id-ID')}</Text>
-                        </View>
+                <View style={styles.saldoContainer}>
+                    <Icon name="money" size={24} color="#214937" style={{ marginRight: 10 }} />
+                    <Text style={styles.saldoText}>Rp {datas.balance.toLocaleString('id-ID')}</Text>
+                </View>
 
-                        {/* Info Transfer Section */}
-                        <View style={styles.infoContainer}>
-                            <InfoRow label="Bank" value={rekening.bank} />
-                            <InfoRow label="Holder" value={rekening.holder} />
-                            <InfoRow label="Nomor" value={rekening.rekening} />
-                            <Text style={styles.noteText}>
-                                *Harap transfer ke nomor rekening diatas.
-                            </Text>
-                            <Text style={styles.noteText}>
-                                *Setiap melakukan top up, harap kirim bukti pembayaran ke WhatsApp dengan mengklik tombol CS.
+                {/* Info Transfer Section */}
+                <View style={styles.infoContainer}>
+                    <InfoRow label="Bank" value={rekening.bank} />
+                    <InfoRow label="Holder" value={rekening.holder} />
+                    <InfoRow label="Nomor" value={rekening.rekening} />
+                    <Text style={styles.noteText}>
+                        *Harap transfer ke nomor rekening diatas.
+                    </Text>
+                    <Text style={styles.noteText}>
+                        *Setiap melakukan top up, harap kirim bukti pembayaran ke WhatsApp dengan mengklik tombol CS.
+                    </Text>
+                </View>
+
+                {/* History Section */}
+                <Text style={styles.sectionTitle}>Riwayat Transaksi</Text>
+                <View style={styles.historyList}>
+                    {history.map((item, idx) =>
+                        <View key={idx} style={styles.historyItem}>
+                            <View>
+                                <Text style={styles.historyTitle}>{item.ket}</Text>
+                                <Text style={styles.historyDate}>{formatDateTime(item.createdAt)}</Text>
+                            </View>
+                            <Text style={[styles.historyAmount, item.status === 'Income' ? styles.income : styles.expense]}>
+                                {item.status === 'Income' ? '+ ' : '- '}Rp {item.nominal.toLocaleString('id-ID')}
                             </Text>
                         </View>
-
-                        {/* History Section */}
-                        <Text style={styles.sectionTitle}>Riwayat Transaksi</Text>
-                        <FlatList
-                            data={history}
-                            renderItem={renderHistoryItem}
-                            keyExtractor={(item) => item.id}
-                            style={styles.historyList}
-                        />
-                    </>
-                )}
+                    )}
+                </View>
             </ScrollView>
 
             {/* Floating Button CS */}
