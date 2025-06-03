@@ -58,9 +58,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width,
-    height: 200,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    height: 200
   },
   indicatorContainer: {
     flexDirection: 'row',
