@@ -231,7 +231,7 @@ const HomeScreen = ({ navigation }) => {
 
             {/* 6. Nama PT */}
             <View style={styles.footer}>
-                <Text style={styles.ptText}>© 2025 PT. Patungan Properti Internasional</Text>
+                <Text style={styles.ptText}>© 2025 PT. Patungan Properti Indonesia</Text>
             </View>
         </ScrollView>
     );

@@ -74,7 +74,7 @@ const SaldoScreen = () => {
     );
 
     const openWhatsApp = () => {
-        const phoneNumber = '6281234567890'; // ganti sesuai CS
+        const phoneNumber = '628179861505'; // ganti sesuai CS
         const message = 'Halo, saya ingin mengirim bukti topup';
         Linking.openURL(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`);
     };

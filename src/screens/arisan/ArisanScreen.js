@@ -18,6 +18,8 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import ArisanComponent from '../component/ArisanView';
 import FloatingButton from './Floating';
 import { getData, postData } from '../../api/service';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 const { width } = Dimensions.get('window');
 
@@ -160,19 +162,29 @@ const ArisanScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.backgroundStyle}>
             <StatusBar backgroundColor="#214937" barStyle="dark-content" />
+
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 {loading ? (
                     <ActivityIndicator size="large" color="#214937" style={{ marginTop: 30 }} />
+                ) : arisanData.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <MaterialCommunityIcons name="cloud-off-outline" size={64} color="#888" />
+                        <Text style={styles.emptyTitle}>Belum Ada Arisan</Text>
+                        <Text style={styles.emptyMessage}>
+                            Saat ini belum tersedia arisan yang aktif. Kami akan memperbarui halaman ini secara berkala.
+                        </Text>
+                    </View>
                 ) : (
                     <View style={styles.cardContainer}>
-                        {arisanData.map((item) => (
-                            <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail", { data: item })} key={item} style={styles.card}>
-                                <ArisanComponent key={item} data={item} />
+                        {arisanData.map((item, idx) => (
+                            <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail", { data: item })} key={idx} style={styles.card}>
+                                <PatunganComponent key={item} data={item} />
                             </TouchableOpacity>
                         ))}
                     </View>
                 )}
             </ScrollView>
+
 
             {datas?.role === '2' &&
                 <FloatingButton onPress={() => setModalVisible(true)} />
@@ -348,6 +360,25 @@ const styles = {
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 12,
+    },
+    emptyContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 50,
+        paddingHorizontal: 20,
+    },
+    emptyTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#444',
+        marginTop: 20,
+    },
+    emptyMessage: {
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
+        marginTop: 10,
+        lineHeight: 20,
     },
 };
 

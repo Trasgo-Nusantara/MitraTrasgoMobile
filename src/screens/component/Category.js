@@ -44,16 +44,15 @@ const CategorySelector = ({ onSelect }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 15,
-    marginVertical: 10,
-    justifyContent:"center"
+    flex:1,padding:20
   },
   scrollContainer: {
-    flexDirection:'row'
+    flexDirection:'row',
+    justifyContent:'center'
   },
   button: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
     backgroundColor: '#E0E0E0',
     borderRadius: 20,
     marginHorizontal: 5,

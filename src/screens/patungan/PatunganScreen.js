@@ -18,6 +18,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import FloatingButton from './Floating';
 import { getData, postData } from '../../api/service';
 import PatunganComponent from '../component/PatunganView';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { width } = Dimensions.get('window');
 
@@ -163,9 +164,17 @@ const PatunganScreen = ({ navigation }) => {
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 {loading ? (
                     <ActivityIndicator size="large" color="#214937" style={{ marginTop: 30 }} />
+                ) : PatunganData.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <MaterialCommunityIcons name="cloud-off-outline" size={64} color="#888" />
+                        <Text style={styles.emptyTitle}>Belum Ada Patungan</Text>
+                        <Text style={styles.emptyMessage}>
+                            Saat ini belum tersedia patungan yang aktif. Kami akan memperbarui halaman ini secara berkala.
+                        </Text>
+                    </View>
                 ) : (
                     <View style={styles.cardContainer}>
-                        {PatunganData.map((item,idx) => (
+                        {PatunganData.map((item, idx) => (
                             <TouchableOpacity onPress={() => navigation.navigate("PatunganDetail", { data: item })} key={idx} style={styles.card}>
                                 <PatunganComponent key={item} data={item} />
                             </TouchableOpacity>
@@ -348,6 +357,25 @@ const styles = {
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 12,
+    },
+    emptyContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 50,
+        paddingHorizontal: 20,
+    },
+    emptyTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#444',
+        marginTop: 20,
+    },
+    emptyMessage: {
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
+        marginTop: 10,
+        lineHeight: 20,
     },
 };
 
