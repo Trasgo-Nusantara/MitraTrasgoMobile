@@ -5,16 +5,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const { width } = Dimensions.get('window');
 const cardWidth = (width - 60) / 2;
 
-// const sampleData = {
-//   image: 'https://api.Patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
-//   nama: 'Rumah Rimbo Datar',
-//   alamat: 'Jl. Rimbo Datar No.36 ... Sumatera Barat',
-//   hargaLot: 'Rp 10.000.000',
-//   hargaJual: 'Rp 500.000.000',
-//   type: 'rumah', // jenis aset
-//   lotTersedia: 3
-// };
-
 const iconMap = {
   rumah: {
     name: 'home-outline',
@@ -41,17 +31,6 @@ const PatunganComponent = ({ data }) => {
     <View style={[styles.card]}>
       <View>
         <Image source={{ uri: data.banner[0] }} style={styles.image} />
-
-        {/* Badge Ikon */}
-        {/* <View style={styles.badgeContainer}>
-          <MaterialCommunityIcons
-            name={iconInfo.name}
-            size={20}
-            color={iconInfo.color}
-          />
-        </View> */}
-
-        {/* Badge Miring "3 Lot Tersedia" */}
         {data.sisaSlot > 0 &&
           <View style={styles.ribbonContainer}>
             <Text style={styles.ribbonText}>Sisa {data.sisaSlot}</Text>
